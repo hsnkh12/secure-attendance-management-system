@@ -70,8 +70,11 @@ ATTENDANCE
 / 
 - GET: index page (all)
 
+/login/
+- POST: login (admin, chair, teacher)
+
 /teachers?department_id=
-- GET: get all teachers (admin, chair, teacher)
+- GET: get all teachers (admin, chair(only his department), teacher)
 - POST: add a new teacher (admin, chair)
 
 /teachers/{teacherID}
