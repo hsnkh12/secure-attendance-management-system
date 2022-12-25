@@ -53,7 +53,7 @@ STUDENT HAS COURSE
 ATTENDANCE 
 - offered course - foreign key
 - student - foreign key
-- date and time
+- date
 - is present
 
 
@@ -68,22 +68,63 @@ ATTENDANCE
 
 
 / 
-- GET: index page 
+- GET: index page (all)
 
 /teachers?department_id=
-- GET: get all teachers 
-- POST: add a new teacher 
+- GET: get all teachers (admin, chair, teacher)
+- POST: add a new teacher (admin, chair)
 
 /teachers/{teacherID}
-- PUT: update teacher information
-- DELETE: remove a teacher
+- GET: get teacher profile (admin, chair, teacher)
+- PUT: update teacher information (admin, chair)
+- DELETE: remove a teacher (admin, chair)
 
-/students?department_id
-- GET: get all students
-- POST: add a new student
+/students?department_id=
+- GET: get all students (admin, chair, teacher)
+- POST: add a new student (admin)
 
 /students/{studentID}
-- PUT: update student information
-- DELETE: remove a student
+- GET: get student profile (admin, chair, teacher, student)
+- PUT: update student information (admin, student)
+- DELETE: remove a student (admin)
 
 /parents/
+- POST: add new parent (admin)
+
+/parents/{parentID}
+- GET: get parent profile (admin, chair, teacher)
+- PUT: update parent information (admin)
+- DELETE: remove a parent (admin)
+
+/departments/
+- GET: get all departments (admin, chair, teacher, students)
+- POST: add a new department (admin)
+
+/departments/{deprtmentID}
+- GET: get department profile (admin, chair, teacher, students)
+- PUT: update department information (admin)
+- DELETE: remove a department (admin)
+
+/courses?department_id=
+- GET: get all courses (admin, chair, teacher, students)
+- POST: add a new course (admin)
+
+/courses/{courseID}
+- GET: get course profile (admin, chair, teacher, students)
+- PUT: update course information (admin)
+- DELETE: remove a course (admin)
+
+/offered-courses?course_id=&semester=&teacher=&group_number=
+- GET: get all offered courses (admin, chair, teacher)
+- POST: add a new offered course (admin)
+
+/offered-courses/{offered_courseID}
+- GET: get course profile (admin, chair, teacher)
+- PUT: update course information (admin)
+- DELETE: remove a course (admin)
+
+/attendance/{offered_courseID}/&student=&date=
+- GET: get all attendance (teacher)
+- POST: add a new attendance (teacher)
+- PUT: update attendance information (teacher)
+- DELETE: remove attendance (teacher)
