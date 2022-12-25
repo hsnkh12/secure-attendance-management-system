@@ -1,3 +1,5 @@
+## Database
+
 USER
 - user id
 - first name
@@ -23,6 +25,7 @@ TEACHER
 
 PARENT
 - student id
+- name
 
 ADMIN
 - employee id
@@ -52,3 +55,35 @@ ATTENDANCE
 - student - foreign key
 - date and time
 - is present
+
+
+
+------
+
+
+
+## Routes 
+
+
+
+
+/ 
+- GET: index page 
+
+/teachers?department_id=
+- GET: get all teachers 
+- POST: add a new teacher 
+
+/teachers/{teacherID}
+- PUT: update teacher information
+- DELETE: remove a teacher
+
+/students?department_id
+- GET: get all students
+- POST: add a new student
+
+/students/{studentID}
+- PUT: update student information
+- DELETE: remove a student
+
+/parents/
