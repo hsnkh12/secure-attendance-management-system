@@ -1,4 +1,3 @@
-const Student = require("./Student");
 
 const Attendance = sequelize.define("Attendance", {
     courseCode: {
