@@ -3,9 +3,10 @@ const {
     verifyTokenMiddleware,
     verifyUserMiddleware,
 } = require("./middlewares/auth");
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const bodyParser = require("body-parser");
-const db = require("./app/models");
 const { teachers } = require("./routes/teachers");
 const { indexRoutes } = require("./routes/index");
 const { teachersRoutes } = require("./routes/teachers");
@@ -14,6 +15,14 @@ const { parentsRoutes } = require("./routes/parents");
 const { departmentsRoutes } = require("./routes/department");
 const { couresesRoutes } = require("./routes/courses");
 const { attendanceRoutes } = require("./routes/attendance");
+const sequelize = require("./utils/db.config");
+const modelsFolder = path.join(__dirname, 'models');
+fs.readdirSync(modelsFolder)
+    .forEach(file => {
+        if (file.endsWith('.js')) {
+            const model = require(path.join(modelsFolder, file));
+        }
+    });
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -50,11 +59,10 @@ app.use(
     attendanceRoutes
 );
 
-db.sequelize
-    .sync({ force: true })
-    .then(() => {
-        console.log("Synced db.");
-    })
-    .catch((err) => {
-        console.log("Failed to sync db: " + err.message);
+var PORT = process.env.PORT || 3000;
+
+sequelize.sync({ force: true }).then(function() {
+    http.listen(PORT, function() {
+        console.log(`Server now on port ${PORT}!`);
     });
+});
