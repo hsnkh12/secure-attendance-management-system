@@ -1,36 +1,68 @@
 const Department = require("./Department");
 const User = require("./User");
-
-const Student = User.extend({
+const { Sequelize, DataTypes } = require("sequelize");
+const sequelize = require("../utils/db.config");
+const Student = sequelize.define("Student", {
+    userid: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+    },
+    email: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+    },
+    firstName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    lastName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    role: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    dateJoined: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    lastLogin: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    dateOfBirth: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     studentId: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         unique: true,
         allowNull: false,
     },
     currentCredits: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: true,
     },
     pastCredits: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: true,
     },
     CGPA: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: true,
     },
     GPA: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: true,
     },
-    department: {
-        type: Sequelize.STRING,
-        references: {
-            model: Department,
-            key: 'depId'
-        }
-    }
-
 });
+Student.belongsTo(Department, { foreignKey: "depId" });
 
 module.exports = Student;

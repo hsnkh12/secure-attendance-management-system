@@ -1,46 +1,36 @@
 const Course = require("./Course");
 const Teacher = require("./Teacher");
-
+const { Sequelize, DataTypes } = require("sequelize");
+const sequelize = require("../utils/db.config");
 const OfferedCourse = sequelize.define("OfferedCourse", {
     offeredCourseCode: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         unique: true,
         allowNull: false,
     },
     name: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
-    courseCode: {
-        type: Sequelize.STRING,
-        references: {
-            model: Course,
-            key: "courseCode",
-        },
-    },
-    teacher: {
-        type: Sequelize.STRING,
-        references: {
-            model: Teacher,
-            key: "employeeId",
-        },
-    },
+
     semester: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     group: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     startDate: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     endDate: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
-    }
+    },
 });
+OfferedCourse.belongsTo(Teacher, { foreignKey: "employeeId" });
+OfferedCourse.belongsTo(Course, { foreignKey: "courseCode" });
 
 module.exports = OfferedCourse;
