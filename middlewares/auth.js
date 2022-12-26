@@ -30,6 +30,7 @@ function verifyUserMiddleware(req, res, next){
     if(err) {
       res.sendStatus(403);
     } else{
+      req.role = data.user.role
       req.userID = data.user.user_id;
       next();
     }})
