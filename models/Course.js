@@ -1,22 +1,18 @@
 const Department = require("./Department");
+const { Sequelize, DataTypes } = require("sequelize");
+const sequelize = require("../utils/db.config");
 
 const Course = sequelize.define("Course", {
     courseCode: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         unique: true,
         allowNull: false,
     },
     name: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
-    department: {
-        type: Sequelize.STRING,
-        references: {
-            model: Department,
-            key: "depId",
-        },
-    },
 });
+Course.belongsTo(Department, { foreignKey: "depId" });
 
 module.exports = Course;
