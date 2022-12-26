@@ -12,7 +12,7 @@ const listAttendanceController = async (req, res) => {
     try{
 
         // Dummy method to get offered course related to (offered course id)
-        const offeredCourse = await OfferedCourse.getCourse()
+        const offeredCourse = await null
 
         if(req.role = 'T'){
 
@@ -22,14 +22,14 @@ const listAttendanceController = async (req, res) => {
             }
 
             // Dummy method to get the attendances related to (offered course)
-            const attendanceList = await Attendance.getAttendance()
+            const attendanceList = await null
             
             res.json(attendanceList)
 
         } else if(req.role = 'P'){
 
             // Dummy method to get the attendances related to (parent's student)
-            const attendanceList = await Attendance.getAttendance()
+            const attendanceList = await null
 
             res.json(attendanceList)
 
