@@ -2,9 +2,7 @@
 
 const listAttendanceController = async (req, res) => {
 
-    const queryParams = req.query()
-
-    const offeredCourseID = queryParams.offered_course
+    const offeredCourseID = req.query().offered_course
 
     // Check if offered course id mentioned in the url 
     if(!offeredCourseID){
@@ -13,9 +11,15 @@ const listAttendanceController = async (req, res) => {
 
     try{
 
+        // Dummy method to get offered course related to (offered course id)
+        const offeredCourse = await OfferedCourse.getCourse()
+
         if(req.role = 'T'){
 
-            const offeredCourse = await OfferedCourse.getCourse
+            // Check if the teacher teaches this course
+            if(offeredCourse.teacherId != req.userID){
+                return res.status(403).send({'Message':'Only teacher associated with this course can check it'})
+            }
 
             // Dummy method to get the attendances related to (offered course)
             const attendanceList = await Attendance.getAttendance()
