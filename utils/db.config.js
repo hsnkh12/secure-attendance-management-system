@@ -1,5 +1,9 @@
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize("attancdance", "root", "my-secret-pw", {
+require("dotenv").config();
+const DB_NAME = process.env.DB_NAME
+const DB_PASSWORD = process.env.DB_PASSWORD
+
+const sequelize = new Sequelize(DB_NAME, "root", DB_PASSWORD, {
     host: "localhost",
     dialect: "mysql",
 });
