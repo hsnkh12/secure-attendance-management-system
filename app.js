@@ -62,7 +62,7 @@ app.use(
 var PORT = process.env.PORT || 3000;
 
 sequelize.sync({ force: true }).then(function() {
-    http.listen(PORT, function() {
+    app.listen(PORT, function() {
         console.log(`Server now on port ${PORT}!`);
     });
 });
