@@ -25,4 +25,4 @@ const Attendance = sequelize.define("Attendance", {
     },
 });
 
-module.exports = StudentCourse;
+module.exports = Attendance;
