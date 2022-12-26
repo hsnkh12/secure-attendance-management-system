@@ -21,3 +21,13 @@ app.use('/parents',verifyTokenMiddleware, verifyUserMiddleware, parentsRoutes)
 app.use('/departments',verifyTokenMiddleware, verifyUserMiddleware, departmentsRoutes)
 app.use('/courses',verifyTokenMiddleware, verifyUserMiddleware, couresesRoutes)
 app.use('/attendance',verifyTokenMiddleware, verifyUserMiddleware, attendanceRoutes)
+
+
+
+db.sync({ force: false })
+    .then(()=>{
+        app.listen(3000)
+    })
+    .catch((error)=>{
+        console.log(error)
+    })
