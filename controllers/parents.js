@@ -60,6 +60,7 @@ const deleteParentController = async (req, res) =>{
         const parent = await null
         // delete parent
         await parent.delete()
+        return res.status(201).send({'Message':'Parent information deleted'})
 
     }
     catch(error){
