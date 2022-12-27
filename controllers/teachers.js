@@ -3,7 +3,7 @@ const { Des } = require("../utils/des");
 
 const listTeachersController = async(req, res) => {
     try {
-        if (req.body.role != "A") {
+        if (req.role != "A") {
             return res
                 .status(403)
                 .send({
@@ -35,7 +35,7 @@ const listTeachersController = async(req, res) => {
 const createTeacherController = async(req, res) => {
     const body = req.body;
     try {
-        if (req.body.role != "A") {
+        if (req.role != "A") {
             return res
                 .status(403)
                 .send({ Message: "Only Admin is authorized to add new teacher" });
@@ -69,7 +69,7 @@ const getTeacherDetailController = async(req, res) => {
     try {
         // Get teacher related to ( teacher id )
 
-        if (req.body.role == "T") {
+        if (req.role == "T") {
             // Check if teacher is himself (I dont have other explanation tbh ;) )
             if (!req.userID == teacher.id) {
                 return res
@@ -78,7 +78,7 @@ const getTeacherDetailController = async(req, res) => {
                         Message: "Teacher is not authorized to view other teacher's information",
                     });
             }
-        } else if (req.body.role == "A") {
+        } else if (req.role == "A") {
             const depId = await Des.encrypt(req.params.departmentID);
             // Get student related to (student id)
             const teachers = await Teacher.findAll({
@@ -119,7 +119,7 @@ const updateTeacherInformationController = async(req, res) => {
     const body = req.body;
 
     try {
-        if (req.body.role != "A") {
+        if (req.role != "A") {
             return res
                 .status(403)
                 .send({
