@@ -1,4 +1,5 @@
 const Student = require("../models/Student");
+const Teacher = require("../models/Teacher");
 const { Des } = require("../utils/des");
 
 const listStudentsController = async(req, res) => {
@@ -123,16 +124,31 @@ const getStudentDetailController = async(req, res) => {
     const queryParams = req.params;
 
     try {
+        const studentId = await Des.encrypt(req.userID);
+        const student = await Student.findOne({
+            where: {
+                studentId: studentId,
+            },
+        });
+
+
         if (req.role == "C") {
             // Get teacher related to (user id)
-            const teacher = await null;
+
+            const employeeId = await Des.encrypt(req.userID);
+            // Get student related to (student id)
+            const teacher = await Teacher.findOne({
+                where: {
+                    employeeId: employeeId,
+                },
+            });
+
 
             // Get student related to (student id)
-            /* 
-                                                      after teacher adder and getter
 
-                                          */
-            if (student.department != teacher.department) {
+
+
+            if (student.depId != teacher.depId) {
                 return res.status(403).send({
                     Message: "Only chair associated with this department can view the student information",
                 });
@@ -151,13 +167,13 @@ const getStudentDetailController = async(req, res) => {
             // Get student related to (student id)
             const studentId = await Des.encrypt(req.params.studentID);
             // Get student related to (student id)
-            const students = await Student.findAll({
+            const student = await Student.findOne({
                 where: {
                     studentId: studentId,
                 },
             });
             const transformedUsers = await Promise.all(
-                students.map(async(user) => ({
+                student.map(async(user) => ({
                     userId: await Des.dencrypt(user.userId),
                     email: await Des.dencrypt(user.email),
                     firstName: await Des.dencrypt(user.firstName),
