@@ -1,13 +1,20 @@
+const Department = require('../models/Department')
+const { Des } = require("../utils/des");
 
 
 const listDepartmentsController = async (req, res) => {
 
     try{
 
-        // Get all departments 
-        const departments = await null 
+        const departments = await Department.findAll();
+        const decryptedDepartments = await Promise.all(
+            departments.map( async (department) => ({
+                depId: await Des.dencrypt(department.depId),
+                name: await Des.dencrypt(department.name),
+            }))
+        )
 
-        return res.json(departments)
+        return res.json(decryptedDepartments)
 
     }
     catch(error){
@@ -27,11 +34,15 @@ const createDepartmentController = async (req, res) => {
             return res.send(403).send({'Message':'Only admin is authorized to add a new department'})
         }
 
-        // Create new department
-        const department = new null
-        await department.save(body)
+        
+        const department = await Department.create({
+            depId: await Des.encrypt(body.depId),
+            name: await Des.encrypt(body.name)
+        });
 
-        return res.json(department)
+        await department.save();
+
+        return res.json({'Message':'New department added'});
 
     }
     catch(error){
@@ -42,7 +53,30 @@ const createDepartmentController = async (req, res) => {
 }
 
 const getDepartmentDetailController = async (req, res) =>{
-// No need for this
+    
+
+    try{
+
+        const depId = await Des.encrypt(req.params.departmentID)
+
+        const department = await Department.findOne({where: {
+            depId: depId
+        }});
+
+        const decryptedDepartment = {
+            depId: await Des.dencrypt(department.depId),
+            name: await Des.dencrypt(department.name)
+        }
+
+        return res.json(decryptedDepartment)
+
+    }
+    catch(error){
+        console.log(error)
+        return res.status(404).send({'Message':'Something went wrong'})
+    }
+    
+    
 }
 
 const updateDepartmentInformationController = async (req, res) =>{
@@ -56,12 +90,15 @@ const updateDepartmentInformationController = async (req, res) =>{
             return res.send(403).send({'Message':'Only admin is authorized to update department information'})
         }
 
-        // Get the department
-        const department = await null
-        // update the department
-        await department.save(body)
-
-        return res.json(department)
+        const depId = await Des.encrypt(req.params.departmentID)
+        
+        await Department.update(body, {
+            where:{
+                depId: depId
+            }
+        })
+        
+        return res.json({'Message':'Department information updated'})
 
     }
     catch(error){
@@ -78,12 +115,15 @@ const deleteDepartmentController = async (req, res) =>{
             return res.send(403).send({'Message':'Only admin is authorized to delete department information'})
         }
 
-        // Get the department
-        const department = await null
-        // delete the department
-        await department.delete()
+        const depId = await Des.encrypt(req.params.departmentID)
 
-        return res.json(department)
+        await Department.destroy({
+            where:{
+                depId:depId
+            }
+        })
+
+        return res.json({'Message':'Department information deleted'})
 
 
     }
