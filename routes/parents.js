@@ -3,12 +3,12 @@ const router = express.Router();
 const controllers = require('../controllers/parents')
 
 
-router.get('/',controllers.listParentsController)
-router.post('/',controllers.createParentController)
+router.get('/', controllers.listParentsController)
+router.post('/', controllers.createParentController)
 
-router.get('/:studentID',controllers.getParentDetailController)
-router.put('/:userid',controllers.updateParentController)
-router.delete('/:studentID',controllers.deleteParentController)
+router.get('/:userid', controllers.getParentDetailController)
+router.put('/:userid', controllers.updateParentController)
+router.delete('/:userid', controllers.deleteParentController)
 
 module.exports = {
     parentsRoutes: router
