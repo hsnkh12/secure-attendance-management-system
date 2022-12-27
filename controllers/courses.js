@@ -4,6 +4,10 @@ const listCoursesController = async (req, res) => {
 
     try{
 
+        if(req.role != 'T' || req.role != 'A'){
+            return res.status(403).send({'Message':'Only Admin and teacher are authorized to view courses information'})
+        }
+
         // Get all courses
         const courses = await null
 
@@ -12,9 +16,7 @@ const listCoursesController = async (req, res) => {
             // Filter all courses, and get courses that in the same department as the teacher's
             courses = courses.filter()
 
-        } else if (req.role != 'A'){
-            return res.status(403).send({'Message':'Only Admin and teacher are authorized to view courses information'})
-        }
+        } 
 
         return res.json(courses)
 
@@ -133,6 +135,10 @@ const listOfferedCoursesController = async (req, res) =>{
 
     try{
 
+        if(req.role != 'T' || req.role != 'A'){
+            return res.status(403).send({'Message':'Only Admin and teacher are authorized to view offered courses information'})
+        }
+
         // Get all offered courses
         const offeredCourses = await null
 
@@ -141,9 +147,7 @@ const listOfferedCoursesController = async (req, res) =>{
             // Filter all offered courses, and get offered courses that teacher teaches
             offeredCourses = offeredCourses.filter()
 
-        } else if (req.role != 'A'){
-            return res.status(403).send({'Message':'Only Admin and teacher are authorized to view offered courses information'})
-        }
+        } 
 
         return res.json(offeredCourses)
 
@@ -183,6 +187,10 @@ const getOfferedCourseDetailController = async (req, res) =>{
 
     try{
 
+        if(req.role != 'T' || req.role != 'A'){
+            return res.status(403).send({'Message':'Only Admin and teacher are authorized to view offered course information'})
+        }
+
         // Get offered course related to (course id)
         const offeredCourse = await null
 
@@ -194,9 +202,7 @@ const getOfferedCourseDetailController = async (req, res) =>{
             }
             
 
-        } else if (req.role != 'A'){
-            return res.status(403).send({'Message':'Only Admin and teacher are authorized to view offered courses information'})
-        }
+        } 
 
         return res.json(offeredCourse)
         

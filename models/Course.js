@@ -15,5 +15,11 @@ const Course = sequelize.define("Course", {
 }, { timestamps: false });
 
 Course.belongsTo(Department, { foreignKey: "depId" });
+Course.belongsTo(Department, {
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+    foreignKey: "depId",
+    allowNull: true,
+});
 
 module.exports = Course;

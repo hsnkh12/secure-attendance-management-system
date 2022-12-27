@@ -4,10 +4,6 @@ const listDepartmentsController = async (req, res) => {
 
     try{
 
-        if(req.role != 'A'){
-            return res.send(403).send({'Message':'Only admin is authorized to view all departments'})
-        }
-
         // Get all departments 
         const departments = await null 
 

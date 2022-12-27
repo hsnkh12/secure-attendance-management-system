@@ -7,6 +7,7 @@ router.get('/', controllers.listTeachersController)
 router.post('/', controllers.createTeacherController)
 
 router.get('/:departmentID', controllers.getTeacherDetailController)
+router.get('/info/:employeeId', controllers.getTeacherInfoController)
 router.put('/:employeeId', controllers.updateTeacherInformationController)
 router.delete('/:employeeId', controllers.deleteTeacherController)
 

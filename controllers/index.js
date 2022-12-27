@@ -21,6 +21,7 @@ const loginController = async (req, res) => {
         let user = await User.getUser()
 
         // Compare submited password to user's actuall stored password
+        // decrypt user password and add it, or encrypt body password and add it
         const passwordIsValid = await PasswordManager.comparePassword(body.password, user.password)
 
         if (passwordIsValid){

@@ -115,6 +115,60 @@ const getTeacherDetailController = async(req, res) => {
     }
 };
 
+
+const getTeacherInfoController = async (req, res) => {
+
+    try{
+
+        if (req.role == 'P'){
+
+            return res
+                .status(403)
+                .send({
+                    Message: "Parent cannot check teacher information",
+                });
+
+        }
+
+        // Get teacher realated to teacher id
+        const teacher = await null
+        
+        if (req.role == 'T'){
+
+            // if teacher is not the teacher 
+            if(req.userID != teacher.employeeId){
+
+                return res
+                .status(403)
+                .send({
+                    Message: "ITS NOT YOU",
+                });
+
+            }
+
+        } else if (req.role == 'C'){
+
+            // If the chair is not in the department
+            
+
+        } else if (req.role == 'S'){
+
+            // If student not in the same course 
+
+            // Return firstname lastname email and department
+            return res.json()
+
+        } 
+
+        return res.json(teacher)
+
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(404).send({ Message: "Something went wrong" });
+    }
+}
+
 const updateTeacherInformationController = async(req, res) => {
     const body = req.body;
 
@@ -173,4 +227,5 @@ module.exports = {
     getTeacherDetailController,
     updateTeacherInformationController,
     deleteTeacherController,
+    getTeacherInfoController
 };
