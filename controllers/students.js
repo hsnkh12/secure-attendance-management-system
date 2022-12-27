@@ -131,6 +131,39 @@ const createStudentController = async(req, res) => {
                 .status(403)
                 .send({ Message: "Only admin can add new student" });
         }
+        const UserID = await Des.encrypt(body.userId);
+
+        // Create new teacher
+        let user = await Student.findOne({
+            where: {
+                userId: UserID,
+            },
+        });
+        if (user === null) {
+            user = await Teacher.findOne({
+                where: {
+                    userId: UserID,
+                },
+            });
+        }
+        if (user === null) {
+            user = await Parent.findOne({
+                where: {
+                    userId: UserID,
+                },
+            });
+        }
+        if (user === null) {
+            user = await User.findOne({
+                where: {
+                    userId: UserID,
+                },
+            });
+        }
+        if (user != null) {
+            return res.status(403).send({ Message: "someone took this username" });
+        }
+
         // Create new student instance and save it
         const student = await Student.create({
             firstName: await Des.encrypt(body.firstName),

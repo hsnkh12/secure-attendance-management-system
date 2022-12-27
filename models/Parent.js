@@ -4,10 +4,12 @@ const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../utils/db.config");
 const Parent = sequelize.define(
     "Parent", {
-        userid: {
+        userId: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: false,
+            primaryKey: true,
+
         },
         email: {
             type: DataTypes.STRING,
