@@ -6,7 +6,8 @@ const OfferedCourseTime = sequelize.define("OfferedCourseTime", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-});
+}, { timestamps: false });
+
 OfferedCourseTime.belongsTo(OfferedCourse, { foreignKey: "offeredCourseCode" });
 
 module.exports = OfferedCourseTime;

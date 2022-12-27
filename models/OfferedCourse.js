@@ -29,7 +29,8 @@ const OfferedCourse = sequelize.define("OfferedCourse", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-});
+}, { timestamps: false });
+
 OfferedCourse.belongsTo(Teacher, { foreignKey: "employeeId" });
 OfferedCourse.belongsTo(Course, { foreignKey: "courseCode" });
 

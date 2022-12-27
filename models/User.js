@@ -3,6 +3,7 @@ const sequelize = require("../utils/db.config");
 const User = sequelize.define("User", {
     userid: {
         type: DataTypes.STRING,
+        primaryKey: true,
         unique: true,
         allowNull: false,
     },
@@ -39,6 +40,7 @@ const User = sequelize.define("User", {
         type: DataTypes.STRING,
         allowNull: true,
     },
-});
+
+}, { timestamps: false });
 
 module.exports = User;

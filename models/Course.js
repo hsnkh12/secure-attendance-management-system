@@ -12,7 +12,8 @@ const Course = sequelize.define("Course", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-});
+}, { timestamps: false });
+
 Course.belongsTo(Department, { foreignKey: "depId" });
 
 module.exports = Course;

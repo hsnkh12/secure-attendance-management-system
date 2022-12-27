@@ -13,7 +13,8 @@ const Attendance = sequelize.define("Attendance", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-});
+}, { timestamps: false });
+
 Attendance.belongsTo(OfferedCourse, { foreignKey: "offeredCourseCode" });
 Attendance.belongsTo(Student, { foreignKey: "studentId" });
 module.exports = Attendance;
