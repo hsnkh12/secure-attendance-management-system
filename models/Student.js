@@ -51,18 +51,22 @@ const Student = sequelize.define(
         currentCredits: {
             type: DataTypes.STRING,
             allowNull: true,
+            defaultValue: "0",
         },
         pastCredits: {
             type: DataTypes.STRING,
             allowNull: true,
+            defaultValue: "0",
         },
         CGPA: {
             type: DataTypes.STRING,
             allowNull: true,
+            defaultValue: "0",
         },
         GPA: {
             type: DataTypes.STRING,
             allowNull: true,
+            defaultValue: "0",
         },
     }, { timestamps: false }
 );

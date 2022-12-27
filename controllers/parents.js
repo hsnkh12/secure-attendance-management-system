@@ -1,11 +1,11 @@
+const { Des } = require("../utils/des")
 
+const listParentsController = async(req, res) => {
 
-const listParentsController = async (req, res) => {
+    try {
 
-    try{
-
-        if(req.role != 'A'){
-            return res.status(403).send({'Message':'Only admin is authorized to view parents'})
+        if (req.role != await Des.encrypt('A')) {
+            return res.status(403).send({ 'Message': 'Only admin is authorized to view parents' })
         }
 
         // Get all parents
@@ -13,95 +13,91 @@ const listParentsController = async (req, res) => {
 
         return res.json(parents)
 
-    }
-    catch(error){
+    } catch (error) {
         console.log(error)
-        return res.status(404).send({'Message':'Something went wrong'})
+        return res.status(404).send({ 'Message': 'Something went wrong' })
     }
 
 }
 
-const createParentController = async (req, res) => {
+const createParentController = async(req, res) => {
 
     const body = req.body
 
-    try{
+    try {
 
-        if(req.role != 'A'){
-            return res.status(403).send({'Message':'Only admin is authorized to add new parent'})
+        if (req.role != await Des.encrypt('A')) {
+            return res.status(403).send({ 'Message': 'Only admin is authorized to add new parent' })
         }
 
         // create new parent 
         const parent = new null
         await parent.save(body)
 
-    }
-    catch(error){
+    } catch (error) {
         console.log(error)
-        return res.status(404).send({'Message':'Something went wrong'})
+        return res.status(404).send({ 'Message': 'Something went wrong' })
     }
 
 }
 
 
-const getParentDetailController = async (req, res) =>{
-// No need for this, we will delete it later
+const getParentDetailController = async(req, res) => {
+    // No need for this, we will delete it later
 }
 
-const updateParentController = async (req, res) =>{
+const updateParentController = async(req, res) => {
 
     const body = req.body
 
-    try{
+    try {
 
-        if(req.role == 'A'){
+        if (req.role == await Des.encrypt('A')) {
 
             // Update the parent
-            return res.json({'Message':'Updated'})
+            return res.json({ 'Message': 'Updated' })
 
-        } else if (req.role == 'P'){
+        } else if (req.role == await Des.encrypt('P')) {
 
             // Get the parent 
             const parent = await null
 
             // Check if the parent is the parent
-            if (parent.userid == req.userID){
-                return res.status(403).send({'Message':'ITS NOT YOU'})
+            if (parent.userid == req.userID) {
+                return res.status(403).send({ 'Message': 'ITS NOT YOU' })
             }
 
             // Update the parent
-            return res.json({'Message':'Updated'})
+            return res.json({ 'Message': 'Updated' })
 
         } else {
-            return res.status(403).send({'Message':'Only admin and parent authorized to update a parent'})
+            return res.status(403).send({ 'Message': 'Only admin and parent authorized to update a parent' })
         }
 
-    }
-    catch(error){
+    } catch (error) {
         console.log(error)
-        return res.status(404).send({'Message':'Something went wrong'})
+        return res.status(404).send({ 'Message': 'Something went wrong' })
     }
-    
+
 }
 
-const deleteParentController = async (req, res) =>{
+const deleteParentController = async(req, res) => {
 
-    try{
+    try {
 
-        if(req.role != 'A'){
-            return res.status(403).send({'Message':'Only admin is authorized to remove a parent'})
+        if (req.role != await Des.encrypt('A')) {
+            return res.status(403).send({ 'Message': 'Only admin is authorized to remove a parent' })
         }
 
         // Get parent by id
         const parent = await null
-        // delete parent
+            // delete parent
         await parent.delete()
-        return res.status(201).send({'Message':'Parent information deleted'})
+        return res.status(201).send({ 'Message': 'Parent information deleted' })
 
-    }
-    catch(error){
+    } catch (error) {
         console.log(error)
-        return res.status(404).send({'Message':'Something went wrong'})
+        return res.status(404).send({ 'Message': 'Something went wrong' })
     }
 }
 

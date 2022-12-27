@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../utils/db.config");
 const User = sequelize.define("User", {
-    userid: {
+    userId: {
         type: DataTypes.STRING,
         primaryKey: true,
         unique: true,
@@ -42,5 +42,7 @@ const User = sequelize.define("User", {
     },
 
 }, { timestamps: false });
+
+
 
 module.exports = User;

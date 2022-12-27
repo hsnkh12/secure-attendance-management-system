@@ -2,27 +2,27 @@ const bcrypt = require('bcrypt');
 
 
 
-  
-class PasswordManager{
 
-  static async hashPassword(password){
+class PasswordManager {
 
-    const salt = await bcrypt.genSalt(6);
-    const hashed = await bcrypt.hash(password, salt);
+    static async hashPassword(password) {
 
-    return hashed
-  }
+        const salt = await bcrypt.genSalt(6);
+        const hashed = await bcrypt.hash(password, salt);
 
-  static async comparePassword(password, hashedPassword){
-    return await bcrypt.compare(password, hashedPassword);
-  }
+        return hashed
+    }
 
-  
+    static async comparePassword(password, hashedPassword) {
+        return await bcrypt.compare(password, hashedPassword);
+    }
+
+
 }
 
 
 
 
 module.exports = {
-  PasswordManager
+    PasswordManager
 }
