@@ -3,7 +3,6 @@ const { Des } = require("../utils/des");
 
 const listStudentsController = async(req, res) => {
     // const queryParams = req.query;
-    console.log(req.role);
     try {
         // role should be provided by jwt
         if (req.body.role == "T") {
@@ -121,7 +120,7 @@ const createStudentController = async(req, res) => {
 };
 
 const getStudentDetailController = async(req, res) => {
-    const queryParams = req.query();
+    const queryParams = req.params;
 
     try {
         if (req.role == "C") {
@@ -129,8 +128,10 @@ const getStudentDetailController = async(req, res) => {
             const teacher = await null;
 
             // Get student related to (student id)
-            const student = await null;
+            /* 
+                                                      after teacher adder and getter
 
+                                          */
             if (student.department != teacher.department) {
                 return res.status(403).send({
                     Message: "Only chair associated with this department can view the student information",
@@ -140,25 +141,40 @@ const getStudentDetailController = async(req, res) => {
             return res.json(student);
         } else if (req.role == "P") {
             // Get parent related to (user id)
-            const parent = await null;
+            /* 
+                                                      after parent adder and getter
 
+                                                      */
+
+            return res.json(students);
+        } else if (req.body.role == "A") {
             // Get student related to (student id)
-            const student = await null;
-
-            if (parent.studentId != student.studentId) {
-                return res
-                    .status(403)
-                    .send({ Message: "Only student's can view student information" });
-            }
-
-            return res.json(student);
-        } else if (req.role == "A") {
+            const studentId = await Des.encrypt(req.params.studentID);
             // Get student related to (student id)
-            const student = await null;
-
-            return res.json(student);
+            const students = await Student.findAll({
+                where: {
+                    studentId: studentId,
+                },
+            });
+            const transformedUsers = await Promise.all(
+                students.map(async(user) => ({
+                    userId: await Des.dencrypt(user.userId),
+                    email: await Des.dencrypt(user.email),
+                    firstName: await Des.dencrypt(user.firstName),
+                    lastName: await Des.dencrypt(user.lastName),
+                    dateJoined: await Des.dencrypt(user.dateJoined),
+                    lastLogin: await Des.dencrypt(user.lastLogin),
+                    dateOfBirth: await Des.dencrypt(user.dateOfBirth),
+                    studentId: await Des.dencrypt(user.studentId),
+                    currentCredits: await Des.dencrypt(user.currentCredits),
+                    pastCredits: await Des.dencrypt(user.pastCredits),
+                    CGPA: await Des.dencrypt(user.CGPA),
+                    GPA: await Des.dencrypt(user.GPA),
+                    depId: await Des.dencrypt(user.depId),
+                }))
+            );
+            return res.json(transformedUsers);
         } else {
-            console.log(error);
             return res.status(403).send({
                 Message: "Only chair, parents, and admin can view student information",
             });
@@ -170,20 +186,28 @@ const getStudentDetailController = async(req, res) => {
 };
 
 const updateStudentInformationController = async(req, res) => {
-    const body = req.body;
-
+    const value = req.body.value;
+    const varName = req.body.varName;
+    const studentId = await Des.encrypt(req.params.studentID);
+    console.log(varName, value);
     try {
-        if (req.role != "A") {
+        if (req.body.role != "A") {
             return res
                 .status(403)
                 .send({ Message: "Only admin can update student information" });
         }
 
         // update student information
-        const student = null;
-        await student.save(body);
+        const newValue = await Des.encrypt(value);
+        const newData = {};
+        newData[varName.toString()] = newValue;
+        const student = await Student.update(newData, {
+            where: {
+                studentId: studentId,
+            },
+        });
 
-        return res.json(student);
+        return res.json(student[0] === 1);
     } catch (error) {
         console.log(error);
         return res.status(404).send({ Message: "Something went wrong" });
@@ -192,15 +216,19 @@ const updateStudentInformationController = async(req, res) => {
 
 const deleteStudentController = async(req, res) => {
     try {
-        if (req.role != "A") {
+        if (req.body.role != "A") {
             return res
                 .status(403)
                 .send({ Message: "Only admin can delete student information" });
         }
 
+        const studentId = await Des.encrypt(req.params.studentID);
         // delete student
-        const student = null;
-        await student.delete();
+        await Student.destroy({
+            where: {
+                studentId: studentId,
+            },
+        });
 
         return res.status(201).send({ Message: "Student information deleted" });
     } catch (error) {

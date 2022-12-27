@@ -14,13 +14,17 @@ class Des {
         return null;
     }
     static async dencrypt(encrypted) {
-        if (encrypted != null) {
-            const decipher = crypto.createDecipheriv(algorithm, key, null);
-            let decrypted = decipher.update(encrypted, "hex", "utf8");
-            decrypted += decipher.final("utf8");
-            return decrypted;
+        try {
+            if (encrypted != null) {
+                const decipher = crypto.createDecipheriv(algorithm, key, null);
+                let decrypted = decipher.update(encrypted, "hex", "utf8");
+                decrypted += decipher.final("utf8");
+                return decrypted;
+            }
+            return encrypted;
+        } catch {
+            return encrypted;
         }
-        return encrypted;
     }
 }
 
