@@ -144,11 +144,10 @@ const updateAttendanceInformationController = async(req, res) => {
 
                 }
             }
-            const value = req.body.value;
+            const value = await Des.encrypt(req.body.value);
             const varName = req.body.varName;
-            const newData = {
-                varName: value
-            }
+            const newData = {}
+            newData[varName.toString()] = value
             const status = await Attendance.update(newData, {
                 where: {
                     offeredCourseCode: offeredCourseID,
