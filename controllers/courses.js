@@ -61,7 +61,7 @@ const createCourseController = async(req, res) => {
 
 const getCourseDetailController = async(req, res) => {
     try {
-        const courseid = req.params.courseID;
+        const courseid = await Des.encrypt(req.params.courseID);
         // Get course by (course id)
         const course = await Course.findOne({
             where: {
