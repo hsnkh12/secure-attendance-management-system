@@ -7,6 +7,8 @@ const Course = sequelize.define("Course", {
         type: DataTypes.STRING,
         unique: true,
         allowNull: false,
+        primaryKey: true,
+
     },
     name: {
         type: DataTypes.STRING,
@@ -14,7 +16,6 @@ const Course = sequelize.define("Course", {
     },
 }, { timestamps: false });
 
-Course.belongsTo(Department, { foreignKey: "depId" });
 Course.belongsTo(Department, {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",

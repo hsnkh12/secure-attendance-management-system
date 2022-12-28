@@ -15,6 +15,17 @@ const Attendance = sequelize.define("Attendance", {
     },
 }, { timestamps: false });
 
-Attendance.belongsTo(OfferedCourse, { foreignKey: "offeredCourseCode" });
-Attendance.belongsTo(Student, { foreignKey: "studentId" });
+Attendance.belongsTo(OfferedCourse, {
+    foreignKey: "offeredCourseCode",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+    allowNull: true,
+
+});
+Attendance.belongsTo(Student, {
+    foreignKey: "studentId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+    allowNull: true,
+});
 module.exports = Attendance;

@@ -7,12 +7,9 @@ const OfferedCourse = sequelize.define("OfferedCourse", {
         type: DataTypes.STRING,
         unique: true,
         allowNull: false,
-    },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+        primaryKey: true,
 
+    },
     semester: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -31,7 +28,18 @@ const OfferedCourse = sequelize.define("OfferedCourse", {
     },
 }, { timestamps: false });
 
-OfferedCourse.belongsTo(Teacher, { foreignKey: "employeeId" });
-OfferedCourse.belongsTo(Course, { foreignKey: "courseCode" });
+OfferedCourse.belongsTo(Teacher, {
+    foreignKey: "userId",
+    onDelete: 'SET NULL',
+    onUpdate: "CASCADE",
+    allowNull: true,
+});
+OfferedCourse.belongsTo(Course, {
+    foreignKey: "courseCode",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+    allowNull: true,
+
+});
 
 module.exports = OfferedCourse;

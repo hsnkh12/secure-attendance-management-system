@@ -8,6 +8,11 @@ const OfferedCourseTime = sequelize.define("OfferedCourseTime", {
     },
 }, { timestamps: false });
 
-OfferedCourseTime.belongsTo(OfferedCourse, { foreignKey: "offeredCourseCode" });
+OfferedCourseTime.belongsTo(OfferedCourse, {
+    foreignKey: "offeredCourseCode",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+    allowNull: true,
+});
 
 module.exports = OfferedCourseTime;
