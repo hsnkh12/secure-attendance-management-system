@@ -4,13 +4,13 @@ const { Des } = require("../utils/des");
 const { PasswordManager } = require("../utils/password");
 const { getOfferedCourseById } = require('../managers/courses')
 const { getTeacherByEmployeeId, getTeacherByUserId } = require('../managers/teachers')
-const { 
-    getStudentCourseByOffCourseId, 
-    getAllStudentsById, 
-    getDecryptedStudents, 
-    getAllStudentsByDepId, 
-    getStudentByUserId, 
-    createNewEncryptedStudent, 
+const {
+    getStudentCourseByOffCourseId,
+    getAllStudentsById,
+    getDecryptedStudents,
+    getAllStudentsByDepId,
+    getStudentByUserId,
+    createNewEncryptedStudent,
     getStudentByStdId,
     getDecryptedStudent
 } = require('../managers/students')
@@ -19,7 +19,7 @@ const User = require("../models/User");
 
 
 const listStudentsController = async(req, res) => {
-    
+
     try {
 
         if (req.role == "T") {
@@ -47,7 +47,7 @@ const listStudentsController = async(req, res) => {
             const decryptedStudents = await getDecryptedStudents(students)
 
             return res.json(decryptedStudents);
-            
+
 
         } else if (req.role == "C") {
 
@@ -63,7 +63,7 @@ const listStudentsController = async(req, res) => {
             const decryptedStudents = await getDecryptedStudents(students)
 
             return res.json(decryptedStudents);
-            
+
         } else {
             return res.status(403).send({
                 Message: "Only teachers, chairs, and admin can view students",
@@ -148,7 +148,7 @@ const getStudentDetailController = async(req, res) => {
             return res.json(decryptedStudent);
 
         } else if (req.role == "P") {
-            
+
             const parent = await getParentByUserId(req.userId)
             const studentId = await Des.encrypt(queryParams.studentID);
 
@@ -178,9 +178,9 @@ const getStudentDetailController = async(req, res) => {
 
             const decryptedStudent = await getDecryptedStudent(student);
             return res.json(decryptedStudent);
-            
+
         } else if (req.role == "A") {
-   
+
             const studentId = await Des.encrypt(req.params.studentID);
             const student = await getStudentByStdId(studentId)
 
@@ -217,7 +217,7 @@ const updateStudentInformationController = async(req, res) => {
         const newData = {};
         let newValue = await Des.encrypt(value);
         if (varName.toString() == "password") {
-            newValue = await PasswordManager.hashPassword(value);
+            newValue = await Des.encrypt(await PasswordManager.hashPassword(value));
         }
         newData[varName.toString()] = newValue;
 
@@ -266,7 +266,7 @@ const deleteStudentController = async(req, res) => {
         }
 
         const studentId = await Des.encrypt(req.params.studentID);
-       
+
         await Student.destroy({
             where: {
                 studentId: studentId,

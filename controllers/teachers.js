@@ -281,7 +281,7 @@ const updateTeacherInformationController = async(req, res) => {
         const newData = {};
         let newValue = await Des.encrypt(value);
         if (varName.toString() == "password") {
-            newValue = await PasswordManager.hashPassword(value);
+            newValue = await Des.encrypt(await PasswordManager.hashPassword(value));
         }
         newData[varName.toString()] = newValue;
         // finding user
