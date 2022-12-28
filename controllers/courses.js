@@ -195,7 +195,7 @@ const listOfferedCoursesController = async(req, res) => {
                     group: await Des.dencrypt(user.group),
                     startDate: await Des.dencrypt(user.startDate),
                     endDate: await Des.dencrypt(user.endDate),
-                    userId: await Des.dencrypt(user.UserId),
+                    userId: await Des.dencrypt(user.userId),
                     courseCode: await Des.dencrypt(user.courseCode),
                     depId: await Des.dencrypt(teacher.depId),
                 }))
@@ -332,15 +332,27 @@ const updateOfferedCourseInformationController = async(req, res) => {
         const offeredCourse = await Des.encrypt(req.params.offeredCourse);
         let newData = {};
         newData[varName.toString()] = await Des.encrypt(value);
-
-        if (req.role == "A") {
-            const offeredCoursed = await OfferedCourse.update(newData, {
+        if (req.role == "T") {
+            const offco = await OfferedCourse.findOne({
                 where: {
                     offeredCourseCode: offeredCourse,
-                },
-            });
-            return res.json(offeredCoursed[0] === 1);
+                }
+            })
+            if (offco.userId == null) {
+                if (varName.toString() != "userId") {
+                    newData["userId"] = req.userID
+                }
+            } else if (offco.userId != req.userID) {
+                return res.status(403).send({ Message: "you are not allowed to do that" });
+
+            }
         }
+        const offeredCoursed = await OfferedCourse.update(newData, {
+            where: {
+                offeredCourseCode: offeredCourse,
+            },
+        });
+        return res.json(offeredCoursed[0] === 1);
     } catch (error) {
         console.log(error);
         return res.status(404).send({ Message: "Something went wrong" });
@@ -350,19 +362,33 @@ const updateOfferedCourseInformationController = async(req, res) => {
 
 const deleteOfferedCourseController = async(req, res) => {
     try {
-        if (req.role == "A" && req.role == "T") {
+        const offeredCourse = await Des.encrypt(req.params.offeredCourse);
+
+        if (req.role == "A" || req.role == "T") {
             // Get the offered course
-            const offeredCourse = await null;
+            const offeredCourseData = await OfferedCourse.findOne({
+                where: {
+                    offeredCourseCode: offeredCourse,
+
+                }
+            })
 
             // Check if the teacher does teach this offered course
-            if (offeredCourse.UserId != req.userID) {
+            if (offeredCourseData.userId != req.userID && req.role == "T") {
                 return res.status(403).send({
                     Message: "Only teachers who teaches this offered course can delete it",
                 });
             }
 
             // Delete the course
-            await offeredCourse.delete();
+            await OfferedCourse.destroy({
+                where: {
+                    offeredCourseCode: offeredCourse,
+                }
+            });
+            return res.status(200).send({
+                Message: "deleted",
+            });
         } else {
             return res.status(403).send({
                 Message: "Only Admin and teacher are authorized to offer courses",
