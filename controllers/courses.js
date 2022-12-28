@@ -1,5 +1,12 @@
+const {
+    getAllStudentsById,
+    getStudentByUserId,
+    getStudentByStdId,
+} = require("../managers/students");
+const { getTeacherByUserId } = require("../managers/teachers");
 const Course = require("../models/Course");
 const OfferedCourse = require("../models/OfferedCourse");
+const StudentCourse = require("../models/StudentCourse");
 const Teacher = require("../models/Teacher");
 const { Des } = require("../utils/des");
 const { Sequelize, Model, Op } = require("sequelize");
@@ -285,6 +292,146 @@ const createOfferedCourseController = async(req, res) => {
         return res.status(404).send({ Message: "Something went wrong" });
     }
 };
+const enrollCourseController = async(req, res) => {
+    const body = req.body;
+    try {
+        if (req.role == "S" || req.role == "A") {
+            let studentUserId = null;
+            if (req.role == "S") {
+                const student = await getAllStudentsById(req.userID);
+                if (student.userId != req.userId) {
+                    return res.status(403).send({
+                        Message: "you can only enroll for yourself",
+                    });
+                }
+                studentUserId = req.userId;
+            }
+            if (req.role == "A") {
+                const studentId = await Des.encrypt(req.body.studentId);
+                const student = await getStudentByStdId(studentId);
+                studentUserId = student.userId;
+            }
+            console.log(studentUserId);
+            const enrolledCourse = await StudentCourse.create({
+                offeredCourseCode: await Des.encrypt(req.params.offeredCourse),
+                userId: studentUserId,
+            });
+            await enrolledCourse.save();
+            return res.status(200).send({ Message: "Student enrolled" });
+        }
+    } catch (error) {
+        if (error.name == "SequelizeUniqueConstraintError") {
+            return res.status(403).send({ Message: "student is already enrolled" });
+        }
+        console.log(error.name);
+        return res.status(404).send({ Message: "Something went wrong" });
+    }
+};
+const enrollListCourseController = async(req, res) => {
+    try {
+        if (req.role == "S") {
+            const enrolledCourses = await StudentCourse.findAll({
+                where: {
+                    userId: req.userID,
+                },
+            });
+            const transformedCourses = await Promise.all(
+                enrolledCourses.map(async(course) => {
+                    const courseCodeGetter = await OfferedCourse.findOne({
+                        where: {
+                            offeredCourseCode: course.offeredCourseCode,
+                        },
+                    });
+                    const teacher = await getTeacherByUserId(courseCodeGetter.userId);
+                    return {
+                        offeredCourseCode: await Des.dencrypt(course.offeredCourseCode),
+                        courseCode: await Des.dencrypt(courseCodeGetter.courseCode),
+                        student: await Des.dencrypt(course.userId),
+                        teacher: await Des.dencrypt(teacher.employeeId),
+                    };
+                })
+            );
+            return res.json(transformedCourses);
+        } else if (req.role == "T") {
+            const enrolledCourses = await StudentCourse.findAll();
+            const transformedCourses = await Promise.all(
+                enrolledCourses.map(async(course) => {
+                    const courseCodeGetter = await OfferedCourse.findOne({
+                        where: {
+                            offeredCourseCode: course.offeredCourseCode,
+                        },
+                    });
+                    const teacher = await getTeacherByUserId(courseCodeGetter.userId);
+                    if (teacher.userId == req.userID) {
+                        return {
+                            offeredCourseCode: await Des.dencrypt(course.offeredCourseCode),
+                            courseCode: await Des.dencrypt(courseCodeGetter.courseCode),
+                            group: await Des.dencrypt(courseCodeGetter.group),
+                            student: await Des.dencrypt(course.userId),
+                        };
+                    }
+                })
+            );
+            return res.json(transformedCourses.filter((element) => element != null));
+        } else if (req.role == "A") {
+            const enrolledCourses = await StudentCourse.findAll();
+            const transformedCourses = await Promise.all(
+                enrolledCourses.map(async(course) => {
+                    const courseCodeGetter = await OfferedCourse.findOne({
+                        where: {
+                            offeredCourseCode: course.offeredCourseCode,
+                        },
+                    });
+                    const teacher = await getTeacherByUserId(courseCodeGetter.userId);
+                    return {
+                        offeredCourseCode: await Des.dencrypt(course.offeredCourseCode),
+                        courseCode: await Des.dencrypt(courseCodeGetter.courseCode),
+                        student: await Des.dencrypt(course.userId),
+                        teacher: await Des.dencrypt(teacher.employeeId),
+                    };
+                })
+            );
+            return res.json(transformedCourses);
+        }
+        return res.status(403).send({ Message: "only admin can list all enrolls" });
+    } catch (error) {
+        console.log(error);
+        return res.status(404).send({ Message: "Something went wrong" });
+    }
+};
+const enrollListByStudent = async(req, res) => {
+    try {
+        const studentId = await Des.encrypt(req.params.studentId);
+        if (req.role == "A") {
+            const enrolledCourses = await StudentCourse.findAll({
+                where: {
+                    userId: studentId,
+                },
+            });
+            const transformedCourses = await Promise.all(
+                enrolledCourses.map(async(course) => {
+                    const courseCodeGetter = await OfferedCourse.findOne({
+                        where: {
+                            offeredCourseCode: course.offeredCourseCode,
+                        },
+                    });
+                    const teacher = await getTeacherByUserId(courseCodeGetter.userId);
+                    return {
+                        offeredCourseCode: await Des.dencrypt(course.offeredCourseCode),
+                        courseCode: await Des.dencrypt(courseCodeGetter.courseCode),
+                        student: await Des.dencrypt(course.userId),
+                        teacher: await Des.dencrypt(teacher.employeeId),
+                    };
+                })
+            );
+            return res.json(transformedCourses);
+        }
+        return res.status(403).send({ Message: "only admin can list all enrolls" });
+    } catch (error) {
+        console.log(error);
+        return res.status(404).send({ Message: "Something went wrong" });
+    }
+};
 
 const getOfferedCourseDetailController = async(req, res) => {
     try {
@@ -336,15 +483,16 @@ const updateOfferedCourseInformationController = async(req, res) => {
             const offco = await OfferedCourse.findOne({
                 where: {
                     offeredCourseCode: offeredCourse,
-                }
-            })
+                },
+            });
             if (offco.userId == null) {
                 if (varName.toString() != "userId") {
-                    newData["userId"] = req.userID
+                    newData["userId"] = req.userID;
                 }
             } else if (offco.userId != req.userID) {
-                return res.status(403).send({ Message: "you are not allowed to do that" });
-
+                return res
+                    .status(403)
+                    .send({ Message: "you are not allowed to do that" });
             }
         }
         const offeredCoursed = await OfferedCourse.update(newData, {
@@ -357,7 +505,6 @@ const updateOfferedCourseInformationController = async(req, res) => {
         console.log(error);
         return res.status(404).send({ Message: "Something went wrong" });
     }
-
 };
 
 const deleteOfferedCourseController = async(req, res) => {
@@ -369,9 +516,8 @@ const deleteOfferedCourseController = async(req, res) => {
             const offeredCourseData = await OfferedCourse.findOne({
                 where: {
                     offeredCourseCode: offeredCourse,
-
-                }
-            })
+                },
+            });
 
             // Check if the teacher does teach this offered course
             if (offeredCourseData.userId != req.userID && req.role == "T") {
@@ -384,7 +530,7 @@ const deleteOfferedCourseController = async(req, res) => {
             await OfferedCourse.destroy({
                 where: {
                     offeredCourseCode: offeredCourse,
-                }
+                },
             });
             return res.status(200).send({
                 Message: "deleted",
@@ -411,4 +557,7 @@ module.exports = {
     getOfferedCourseDetailController,
     updateOfferedCourseInformationController,
     deleteOfferedCourseController,
+    enrollCourseController,
+    enrollListCourseController,
+    enrollListByStudent,
 };

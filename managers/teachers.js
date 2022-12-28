@@ -2,7 +2,7 @@ const Teacher = require('../models/Teacher')
 
 
 
-const getTeacherByEmployeeId = async (employeeId) => {
+const getTeacherByEmployeeId = async(employeeId) => {
 
     return await Teacher.findOne({
         where: {
@@ -11,7 +11,7 @@ const getTeacherByEmployeeId = async (employeeId) => {
     });
 }
 
-const getTeacherByUserId = async (userId) => {
+const getTeacherByUserId = async(userId) => {
 
     return await Teacher.findOne({
         where: {
@@ -22,5 +22,5 @@ const getTeacherByUserId = async (userId) => {
 
 module.exports = {
     getTeacherByEmployeeId,
-    getTeacherByUserId 
+    getTeacherByUserId
 }

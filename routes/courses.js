@@ -5,6 +5,9 @@ const controllers = require('../controllers/courses')
 
 router.get('/', controllers.listCoursesController)
 router.post('/', controllers.createCourseController)
+router.get('/enroll/', controllers.enrollListCourseController)
+router.get('/enroll/:studentId', controllers.enrollListByStudent)
+router.post('/enroll/:offeredCourse', controllers.enrollCourseController)
 
 router.get('/offered', controllers.listOfferedCoursesController)
 router.post('/offered', controllers.createOfferedCourseController)

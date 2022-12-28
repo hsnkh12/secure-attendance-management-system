@@ -24,19 +24,17 @@ const listStudentsController = async(req, res) => {
 
         if (req.role == "T") {
 
-            const offeredCourseID = req.body.offered_course;
+            const offeredCourseID = await Des.encrypt(req.body.offered_course)
 
             if (!offeredCourseID) {
                 return res
                     .status(400)
                     .send({ Message: "Offered course id must be provided in the URL" });
             }
-
             const offeredCourse = await getOfferedCourseById(offeredCourseID)
-            const teacherOfferedCourseId = await Des.encrypt(offeredCourse.employeeId)
-            const teacher = await getTeacherByEmployeeId(teacherOfferedCourseId)
+            const teacher = await getTeacherByUserId(offeredCourse.userId)
 
-            if (teacher.userId != (await Des.encrypt(req.userID))) {
+            if (teacher.userId != req.userID) {
                 return res.status(403).send({
                     Message: "Only teachers associated with this course can view its students",
                 });
