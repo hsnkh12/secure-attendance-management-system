@@ -44,14 +44,20 @@ const Parent = sequelize.define(
             type: DataTypes.STRING,
             allowNull: true,
         },
+        studentUserId: {
+            type: DataTypes.STRING,
+            references: {
+                model: Student,
+                key: 'userId',
+                onDelete: "CASCADE",
+                onUpdate: "CASCADE",
+                foreignKey: "userId",
+                allowNull: true,
+
+            }
+        },
     }, { timestamps: false }
 );
 
-Parent.belongsTo(Student, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
-    foreignKey: "studentId",
-    allowNull: true,
-});
 
 module.exports = Parent;

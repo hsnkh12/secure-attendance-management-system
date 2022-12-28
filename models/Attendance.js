@@ -13,19 +13,34 @@ const Attendance = sequelize.define("Attendance", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-}, { timestamps: false });
+    userId: {
+        type: DataTypes.STRING,
+        references: {
+            model: Student,
+            key: 'userId',
+            onDelete: "CASCADE",
+            onUpdate: "CASCADE",
+            allowNull: false,
+        }
+    },
+    offeredCourseCode: {
+        type: DataTypes.STRING,
+        references: {
+            model: OfferedCourse,
+            key: 'offeredCourseCode',
+            onDelete: "CASCADE",
+            onUpdate: "CASCADE",
+            allowNull: false,
 
-Attendance.belongsTo(OfferedCourse, {
-    foreignKey: "offeredCourseCode",
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
-    allowNull: true,
+        }
+    },
+}, {
+    timestamps: false,
+    indexes: [{
+        fields: ['userId', 'offeredCourseCode', 'date'],
+        unique: true
+    }]
+});
 
-});
-Attendance.belongsTo(Student, {
-    foreignKey: "studentId",
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
-    allowNull: true,
-});
+
 module.exports = Attendance;

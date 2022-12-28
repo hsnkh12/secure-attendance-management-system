@@ -1,3 +1,4 @@
+const { getStudentByStdId, getStudentByUserId } = require("../managers/students");
 const Parent = require("../models/Parent");
 const Student = require("../models/Student");
 const Teacher = require("../models/Teacher");
@@ -17,21 +18,29 @@ const listParentsController = async(req, res) => {
         const parents = await Parent.findAll();
 
         const transformedUsers = await Promise.all(
-            parents.map(async(user) => ({
-                userId: await Des.dencrypt(user.userId),
-                email: await Des.dencrypt(user.email),
-                firstName: await Des.dencrypt(user.firstName),
-                lastName: await Des.dencrypt(user.lastName),
-                dateJoined: await Des.dencrypt(user.dateJoined),
-                lastLogin: await Des.dencrypt(user.lastLogin),
-                dateOfBirth: await Des.dencrypt(user.dateOfBirth),
-                studentId: await Des.dencrypt(user.studentId),
-                currentCredits: await Des.dencrypt(user.currentCredits),
-                pastCredits: await Des.dencrypt(user.pastCredits),
-                CGPA: await Des.dencrypt(user.CGPA),
-                GPA: await Des.dencrypt(user.GPA),
-                depId: await Des.dencrypt(user.depId),
-            }))
+            parents.map(async(user) => {
+                let student = await getStudentByUserId(user.studentUserId);
+                if (student == null) {
+                    student = {
+                        studentId: null
+                    }
+                }
+                return {
+                    userId: await Des.dencrypt(user.userId),
+                    email: await Des.dencrypt(user.email),
+                    firstName: await Des.dencrypt(user.firstName),
+                    lastName: await Des.dencrypt(user.lastName),
+                    dateJoined: await Des.dencrypt(user.dateJoined),
+                    lastLogin: await Des.dencrypt(user.lastLogin),
+                    dateOfBirth: await Des.dencrypt(user.dateOfBirth),
+                    studentId: await Des.dencrypt(student.studentId),
+                    currentCredits: await Des.dencrypt(user.currentCredits),
+                    pastCredits: await Des.dencrypt(user.pastCredits),
+                    CGPA: await Des.dencrypt(user.CGPA),
+                    GPA: await Des.dencrypt(user.GPA),
+                    depId: await Des.dencrypt(user.depId),
+                }
+            })
         );
         return res.json(transformedUsers);
     } catch (error) {
@@ -82,10 +91,17 @@ const createParentController = async(req, res) => {
             return res.status(403).send({ Message: "someone took this username" });
         }
         // create new parent
+        let student = null;
+        student = await getStudentByStdId(await Des.encrypt(body.studentId))
+        if (student == null) {
+            student = {
+                userId: null
+            }
+        }
         const parent = await Parent.create({
             firstName: await Des.encrypt(body.firstName),
             lastName: await Des.encrypt(body.lastName),
-            studentId: await Des.encrypt(body.studentId),
+            studentUserId: student.userId,
             email: await Des.encrypt(body.email),
             password: await Des.encrypt(
                 await PasswordManager.hashPassword(body.password)
@@ -109,7 +125,14 @@ const getParentDetailController = async(req, res) => {
             userId: userId,
         },
     });
+    let student = null;
+    student = await getStudentByUserId(parent.studentUserId)
+    if (student == null) {
+        student = {
+            studentId: null
+        }
 
+    }
     const transformedUser = {
         userId: await Des.dencrypt(parent.userId),
         email: await Des.dencrypt(parent.email),
@@ -118,8 +141,7 @@ const getParentDetailController = async(req, res) => {
         dateJoined: await Des.dencrypt(parent.dateJoined),
         lastLogin: await Des.dencrypt(parent.lastLogin),
         dateOfBirth: await Des.dencrypt(parent.dateOfBirth),
-        studentId: await Des.dencrypt(parent.studentId),
-        depId: await Des.dencrypt(parent.depId),
+        studentId: await Des.dencrypt(student.studentId),
     };
     if (req.role == "A") {
         return res.json(transformedUser);
@@ -148,7 +170,7 @@ const updateParentController = async(req, res) => {
             const varName = req.body.varName;
             console.log(req.params.userid);
             const userId = await Des.encrypt(req.params.userid);
-            const newData = {};
+            let newData = {};
             let newValue = await Des.encrypt(value);
             if (varName.toString() == "password") {
                 newValue = await PasswordManager.hashPassword(value);
@@ -187,6 +209,18 @@ const updateParentController = async(req, res) => {
                         .status(403)
                         .send({ Message: "someone took this username" });
                 }
+            }
+            if (varName.toString() == "studentId") {
+                let student = null;
+                student = await getStudentByStdId(newValue)
+                if (student == null) {
+                    return res.status(404).send({
+                        Message: "student Id not found",
+                    });
+                }
+                newData = {}
+                newData["studentUserId"] = student.userId
+                console.log(newData);
             }
             const parent = await Parent.update(newData, {
                 where: {

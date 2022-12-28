@@ -1,3 +1,4 @@
+const Course = require("../models/Course");
 const OfferedCourse = require("../models/OfferedCourse");
 
 
@@ -9,9 +10,18 @@ const getOfferedCourseById = async(offeredCourseID) => {
     });
 
 }
+const getCourseById = async(CourseID) => {
+    return await Course.findOne({
+        where: {
+            courseCode: CourseID,
+        },
+    });
+
+}
 
 
 
 module.exports = {
-    getOfferedCourseById
+    getOfferedCourseById,
+    getCourseById
 }
