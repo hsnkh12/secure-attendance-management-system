@@ -2,6 +2,9 @@
 
 Welcome to the Attendance Management System (AMS) for emu/university. This application is built with Node.js and Express.js and is designed to help emu/university staff manage student attendance records.
 
+## Contributions
+- [Hassan El Abdallah](https://github.com/hsnkh12)
+- [Soheyl Bokaie](https://github.com/soheylbokaie)
 
 ## Features
 - Record attendance for students in classes
