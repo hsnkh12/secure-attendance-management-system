@@ -343,7 +343,7 @@ const enrollCourseController = async(req, res) => {
             const student = await getStudentByUserId(req.userID);
 
             // Check if user is enrolling for himself
-            if (student.userId != req.userId) {
+            if (student.userId != req.userID) {
                 return res.status(403).send({
                     Message: "you can only enroll for yourself",
                 });

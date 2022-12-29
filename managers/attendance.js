@@ -1,7 +1,7 @@
 const {Des} = require('../utils/des')
 const Attendance = require('../models/Attendance')
-
-
+const {getStudentByUserId} = require('../managers/students')
+const {getOfferedCourseById} = require('../managers/courses')
 
 const getAllAttendanceByOfferedCourseCode = async (offeredCourseCode) => {
     return await Attendance.findAll({
