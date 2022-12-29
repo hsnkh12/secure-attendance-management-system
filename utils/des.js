@@ -1,7 +1,10 @@
 const crypto = require("crypto");
 const algorithm = "des-ecb";
 // use a hex key here
-const key = Buffer.from("d0e276d0144890d3", "hex");
+require("dotenv").config();
+const DES_KEY = process.env.DES_KEY;
+
+const key = Buffer.from(DES_KEY, "hex");
 
 class Des {
     static async encrypt(text) {
