@@ -26,7 +26,7 @@ fs.readdirSync(modelsFolder)
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors({
-    origin: 'http://localhost:4200'
+    origin: '*'
 }));
 app.use("/", indexRoutes);
 app.use(
