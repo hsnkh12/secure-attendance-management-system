@@ -1,133 +1,37 @@
-## Database
+# emu/university attendance management system
 
-USER
-- user id
-- first name
-- last name
-- email
-- password
-- role 
-- date joined 
-- last login 
-- date of birth 
-
-STUDENT
-- student id
-- current credits 
-- past credits
-- CGPA
-- GPA
-- department - foreign key
-
-TEACHER 
-- employee id
-- department - foreign key
-
-PARENT
-- student id
-- name
-
-ADMIN
-- employee id
-
-DEPARTMENT 
-- department id
-- name
-
-COURSE
-- course code
-- name 
-- depaartment - foreign key
-
-OFFERED COURSE
-- offered course id
-- course - foriegn key
-- semister 
-- teacher - foreign key
-- group number
-
-STUDENT HAS COURSE 
-- student - foreign key
-- offered course - foreign key 
-
-ATTENDANCE 
-- offered course - foreign key
-- student - foreign key
-- date
-- is present
+Welcome to the Attendance Management System (AMS) for emu/university. This application is built with Node.js and Express.js and is designed to help emu/university staff manage student attendance records.
 
 
-
-------
-
-
-
-## Routes 
-
+## Features
+- Record attendance for students in classes
+- View attendance history for individual students or entire classes
+- Automatic calculation of attendance percentage for students
+- Secure storage of attendance data using DES encryption
 
 
+## Getting Started
+To get started with the AMS, follow these steps:
+1. Install Node.js on your machine if it is not already installed. You can
+download the latest version of Node.js from the official website.
 
-/ 
-- GET: index page (all)
+2. Clone the AMS repository to your local machine:
+```
+git clone https://github.com/hsnkh12/emu-attendance-management-system.git
 
-/login/
-- POST: login (admin, chair, teacher)
+```
+3. Navigate to the project directory and install the required dependencies:
+```
+cd emu-attendance-management-system
+npm install
 
-/teachers?department_id=
-- GET: get all teachers (admin, chair(only his department), teacher)
-- POST: add a new teacher (admin, chair)
+```
+4. Start the application by running the following command:
+```
+nodemon app.js
+```
 
-/teachers/{teacherID}
-- GET: get teacher profile (admin, chair, teacher)
-- PUT: update teacher information (admin, chair)
-- DELETE: remove a teacher (admin, chair)
+The AMS should now be running on your local machine. You can access it by visiting http://localhost:3000 in your web browser.
 
-/students?department_id=
-- GET: get all students (admin, chair, teacher)
-- POST: add a new student (admin)
-
-/students/{studentID}
-- GET: get student profile (admin, chair, teacher, student)
-- PUT: update student information (admin, student)
-- DELETE: remove a student (admin)
-
-/parents/
-- POST: add new parent (admin)
-
-/parents/{parentID}
-- GET: get parent profile (admin, chair, teacher)
-- PUT: update parent information (admin)
-- DELETE: remove a parent (admin)
-
-/departments/
-- GET: get all departments (admin, chair, teacher, students)
-- POST: add a new department (admin)
-
-/departments/{deprtmentID}
-- GET: get department profile (admin, chair, teacher, students)
-- PUT: update department information (admin)
-- DELETE: remove a department (admin)
-
-/courses?department_id=
-- GET: get all courses (admin, chair, teacher, students)
-- POST: add a new course (admin)
-
-/courses/{courseID}
-- GET: get course profile (admin, chair, teacher, students)
-- PUT: update course information (admin)
-- DELETE: remove a course (admin)
-
-/offered-courses?course_id=&semester=&teacher=&group_number=
-- GET: get all offered courses (admin, chair, teacher)
-- POST: add a new offered course (admin)
-
-/offered-courses/{offered_courseID}
-- GET: get course profile (admin, chair, teacher)
-- PUT: update course information (admin)
-- DELETE: remove a course (admin)
-
-/attendance/{offered_courseID}/&student=&date=
-- GET: get all attendance (teacher)
-- POST: add a new attendance (teacher)
-- PUT: update attendance information (teacher)
-- DELETE: remove attendance (teacher)
+## Security
+One of the key features of the AMS is the use of DES encryption to secure the attendance data stored in the database. When attendance records are added or retrieved from the database, they are automatically encrypted or decrypted using the DES algorithm. This ensures that the attendance data is protected against unauthorized access.
