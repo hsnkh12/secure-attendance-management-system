@@ -23,8 +23,7 @@ fs.readdirSync(modelsFolder)
             const model = require(path.join(modelsFolder, file));
         }
     });
-
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(cors({
     origin: '*'
 }));
@@ -60,7 +59,12 @@ app.use(
     verifyUserMiddleware,
     attendanceRoutes
 );
+/* 
+if you faced any issues run this command in your terminal before running the app:
 
+export NODE_OPTIONS=--openssl-legacy-provider
+
+*/
 
 var PORT = process.env.PORT || 3000;
 
