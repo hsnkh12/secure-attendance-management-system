@@ -34,13 +34,49 @@ const checkUsernameIsTaken = async (userId) => {
     }
 
     if (user != null ){
-        return true
+        return true;
     }
 
-    return false
+    return false;
 
 }
 
+
+const getUserByUserId = async (userId) => {
+
+    let user = await Student.findOne({
+        where: {
+            userId: userId,
+        },
+    });
+    if (user === null) {
+        user = await Teacher.findOne({
+            where: {
+                userId: userId,
+            },
+        });
+    }
+    if (user === null) {
+        user = await Parent.findOne({
+            where: {
+                userId: userId,
+            },
+        });
+    }
+    if (user === null) {
+        user = await User.findOne({
+            where: {
+                userId: userId,
+            },
+        });
+    }
+
+    return user;
+
+    
+}
+
 module.exports = {
-    checkUsernameIsTaken
+    checkUsernameIsTaken,
+    getUserByUserId
 }

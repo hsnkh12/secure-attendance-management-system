@@ -1,132 +1,89 @@
 const { getStudentByStdId, getStudentByUserId } = require("../managers/students");
 const Parent = require("../models/Parent");
-const Student = require("../models/Student");
-const Teacher = require("../models/Teacher");
-const User = require("../models/User");
 const { Des } = require("../utils/des");
 const { PasswordManager } = require("../utils/password");
+const {
+    getDecryptedParents, 
+    getParentByUserId, 
+} = require('../managers/parents')
+const {checkUsernameIsTaken} = require('../managers/general')
+
+
 
 const listParentsController = async(req, res) => {
+
     try {
+
+        // Check if role is NOT Admin
         if (req.role != "A") {
             return res
                 .status(403)
                 .send({ Message: "Only admin is authorized to view parents" });
         }
 
-        // Get all parents
+        // Get all parents, decrypt them, and return them
         const parents = await Parent.findAll();
-
-        const transformedUsers = await Promise.all(
-            parents.map(async(user) => {
-                let student = await getStudentByUserId(user.studentUserId);
-                if (student == null) {
-                    student = {
-                        studentId: null
-                    }
-                }
-                return {
-                    userId: await Des.dencrypt(user.userId),
-                    email: await Des.dencrypt(user.email),
-                    firstName: await Des.dencrypt(user.firstName),
-                    lastName: await Des.dencrypt(user.lastName),
-                    dateJoined: await Des.dencrypt(user.dateJoined),
-                    lastLogin: await Des.dencrypt(user.lastLogin),
-                    dateOfBirth: await Des.dencrypt(user.dateOfBirth),
-                    studentId: await Des.dencrypt(student.studentId),
-                    currentCredits: await Des.dencrypt(user.currentCredits),
-                    pastCredits: await Des.dencrypt(user.pastCredits),
-                    CGPA: await Des.dencrypt(user.CGPA),
-                    GPA: await Des.dencrypt(user.GPA),
-                    depId: await Des.dencrypt(user.depId),
-                }
-            })
-        );
+        const transformedUsers = await getDecryptedParents(parents);
         return res.json(transformedUsers);
+
     } catch (error) {
         console.log(error);
         return res.status(404).send({ Message: "Something went wrong" });
     }
 };
+
+
 
 const createParentController = async(req, res) => {
     const body = req.body;
 
     try {
+        
+        // Check if role is NOT Admin
         if (req.role != "A") {
             return res
                 .status(403)
                 .send({ Message: "Only admin is authorized to add new parent" });
         }
-        const UserID = await Des.encrypt(body.userId);
+        const userId = await Des.encrypt(body.userId);
 
-        // Create new teacher
-        let user = await Student.findOne({
-            where: {
-                userId: UserID,
-            },
-        });
-        if (user === null) {
-            user = await Teacher.findOne({
-                where: {
-                    userId: UserID,
-                },
-            });
-        }
-        if (user === null) {
-            user = await Parent.findOne({
-                where: {
-                    userId: UserID,
-                },
-            });
-        }
-        if (user === null) {
-            user = await User.findOne({
-                where: {
-                    userId: UserID,
-                },
-            });
-        }
-        if (user != null) {
+        // Check if usrename/userId is already taken by other user
+        let usernameIsTaken = await checkUsernameIsTaken(userId);
+        if (usernameIsTaken) {
             return res.status(403).send({ Message: "someone took this username" });
         }
-        // create new parent
+
         let student = null;
-        student = await getStudentByStdId(await Des.encrypt(body.studentId))
+
+        // Get and check student with given student if he/she exists
+        student = await getStudentByStdId(await Des.encrypt(body.studentId));
         if (student == null) {
+            // Otherwise, create an empty user with null userId
             student = {
                 userId: null
             }
         }
-        const parent = await Parent.create({
-            firstName: await Des.encrypt(body.firstName),
-            lastName: await Des.encrypt(body.lastName),
-            studentUserId: student.userId,
-            email: await Des.encrypt(body.email),
-            password: await Des.encrypt(
-                await PasswordManager.hashPassword(body.password)
-            ),
-            role: await Des.encrypt("P"),
-            dateJoined: await Des.encrypt(body.dateJoined.toString()),
-            userId: await Des.encrypt(body.userId),
-        });
-        await parent.save(body);
+
+        // Create parent, encrypt, save, and return it
+        const parent = await createNewEncryptedParent(body, student);
+        await parent.save();
         return res.status(200).send({ Message: "New parent added" });
+
     } catch (error) {
         console.log(error);
         return res.status(404).send({ Message: "Something went wrong" });
     }
 };
 
+
+
 const getParentDetailController = async(req, res) => {
-    const userId = await Des.encrypt(req.params.userid)
-    const parent = await Parent.findOne({
-        where: {
-            userId: userId,
-        },
-    });
+
+    const userId = await Des.encrypt(req.params.userid);
+    const parent = await getParentByUserId(userId);
+
     let student = null;
-    student = await getStudentByUserId(parent.studentUserId)
+    student = await getStudentByUserId(parent.studentUserId);
     if (student == null) {
         student = {
             studentId: null
@@ -151,12 +108,14 @@ const getParentDetailController = async(req, res) => {
             return res.json(transformedUser);
         }
     }
-    console.log(await Des.dencrypt(req.role));
+    
     return res
         .status(403)
         .send({ Message: "Only admin is see parents details" });
 
 };
+
+
 
 const updateParentController = async(req, res) => {
     try {
@@ -166,6 +125,7 @@ const updateParentController = async(req, res) => {
                 .send({ Message: "Only admin can update student information" });
         }
         if (req.role == "A") {
+
             const value = req.body.value;
             const varName = req.body.varName;
             console.log(req.params.userid);
@@ -178,33 +138,9 @@ const updateParentController = async(req, res) => {
             newData[varName.toString()] = newValue;
             // finding user
             if (varName.toString() == "userId") {
-                let user = await Student.findOne({
-                    where: {
-                        userId: newValue,
-                    },
-                });
-                if (user === null) {
-                    user = await Teacher.findOne({
-                        where: {
-                            userId: newValue,
-                        },
-                    });
-                }
-                if (user === null) {
-                    user = await Parent.findOne({
-                        where: {
-                            userId: newValue,
-                        },
-                    });
-                }
-                if (user === null) {
-                    user = await User.findOne({
-                        where: {
-                            userId: newValue,
-                        },
-                    });
-                }
-                if (user != null) {
+
+                let usernameIsTaken = await checkUsernameIsTaken(newValue);
+                if (usernameIsTaken) {
                     return res
                         .status(403)
                         .send({ Message: "someone took this username" });
@@ -218,8 +154,8 @@ const updateParentController = async(req, res) => {
                         Message: "student Id not found",
                     });
                 }
-                newData = {}
-                newData["studentUserId"] = student.userId
+                newData = {};
+                newData["studentUserId"] = student.userId;
                 console.log(newData);
             }
             const parent = await Parent.update(newData, {
@@ -248,6 +184,8 @@ const updateParentController = async(req, res) => {
 
 const deleteParentController = async(req, res) => {
     try {
+
+        // Check if the role is NOT Admin
         if (req.role != "A") {
             return res
                 .status(403)
@@ -265,6 +203,7 @@ const deleteParentController = async(req, res) => {
         // delete parent
         await parent.delete();
         return res.status(201).send({ Message: "Parent information deleted" });
+
     } catch (error) {
         console.log(error);
         return res.status(404).send({ Message: "Something went wrong" });

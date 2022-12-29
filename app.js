@@ -7,7 +7,6 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 const bodyParser = require("body-parser");
-const { teachers } = require("./routes/teachers");
 const { indexRoutes } = require("./routes/index");
 const { teachersRoutes } = require("./routes/teachers");
 const { studentsRoutes } = require("./routes/students");
