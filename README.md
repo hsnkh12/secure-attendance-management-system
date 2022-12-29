@@ -30,6 +30,10 @@ npm install
 ```
 nodemon app.js
 ```
+5. if you faced any issues run this command in your terminal before running the app
+```
+export NODE_OPTIONS=--openssl-legacy-provider
+```
 
 The AMS should now be running on your local machine. You can access it by visiting http://localhost:3000 in your web browser.
 
