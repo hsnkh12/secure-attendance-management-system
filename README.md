@@ -6,7 +6,6 @@ Welcome to the Attendance Management System (AMS) for emu/university. This appli
 ## Features
 - Record attendance for students in classes
 - View attendance history for individual students or entire classes
-- Automatic calculation of attendance percentage for students
 - Secure storage of attendance data using DES encryption
 
 
