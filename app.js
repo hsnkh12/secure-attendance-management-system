@@ -6,6 +6,7 @@ const {
 const fs = require('fs');
 const path = require('path');
 const app = express();
+const cors = require('cors');
 const bodyParser = require("body-parser");
 const { teachers } = require("./routes/teachers");
 const { indexRoutes } = require("./routes/index");
@@ -25,7 +26,9 @@ fs.readdirSync(modelsFolder)
     });
 
 app.use(bodyParser.urlencoded({ extended: false }));
-
+app.use(cors({
+    origin: 'http://localhost:4200'
+}));
 app.use("/", indexRoutes);
 app.use(
     "/teachers",
@@ -67,4 +70,3 @@ sequelize.sync({ force: false }).then(function() {
         console.log(`Server now on port ${PORT}!`);
     });
 });
-
