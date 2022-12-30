@@ -49,7 +49,7 @@ const Parent = sequelize.define(
             references: {
                 model: Student,
                 key: 'userId',
-                onDelete: "CASCADE",
+                onDelete: "SET NULL",
                 onUpdate: "CASCADE",
                 foreignKey: "userId",
                 allowNull: true,

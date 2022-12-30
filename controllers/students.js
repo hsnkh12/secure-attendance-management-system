@@ -13,7 +13,7 @@ const {
     getStudentByStdId,
     getDecryptedStudent
 } = require('../managers/students')
-const {checkUsernameIsTaken} = require('../managers/general')
+const { checkUsernameIsTaken } = require('../managers/general')
 const { getParentByUserId } = require('../managers/parents')
 
 
@@ -56,7 +56,7 @@ const listStudentsController = async(req, res) => {
 
         } else if (req.role == "C") {
 
-            
+
             const teacher = await getTeacherByUserId(req.userID);
 
             // Get students with the department as the user/chair, decrypt, and send
@@ -265,12 +265,12 @@ const deleteStudentController = async(req, res) => {
         // Find Student and delete it
         await Student.destroy({
             where: {
-                studentId: studentId,
+                userId: studentId,
             },
         });
 
         return res.status(201).send({ Message: "Student information deleted" });
-        
+
     } catch (error) {
         console.log(error);
         return res.status(404).send({ Message: "Something went wrong" });

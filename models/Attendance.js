@@ -18,9 +18,9 @@ const Attendance = sequelize.define("Attendance", {
         references: {
             model: Student,
             key: 'userId',
-            onDelete: "CASCADE",
+            onDelete: "SET NULL",
             onUpdate: "CASCADE",
-            allowNull: false,
+            allowNull: true,
         }
     },
     offeredCourseCode: {
@@ -28,9 +28,9 @@ const Attendance = sequelize.define("Attendance", {
         references: {
             model: OfferedCourse,
             key: 'offeredCourseCode',
-            onDelete: "CASCADE",
+            onDelete: "SET NULL",
             onUpdate: "CASCADE",
-            allowNull: false,
+            allowNull: true,
 
         }
     },
