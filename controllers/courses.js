@@ -9,7 +9,7 @@ const StudentCourse = require("../models/StudentCourse");
 const Teacher = require("../models/Teacher");
 const { Des } = require("../utils/des");
 const { Op } = require("sequelize");
-const { 
+const {
     createNewEncryptedCourse,
     getOfferedCourseById,
     getCourseById,
@@ -20,7 +20,7 @@ const {
     createNewEncryptedOfferedCourse,
     getAllStudentCoursesByUserId,
     getDecryptedEnrollerdCourses,
-    getOfferedCoursesByStdId 
+    getOfferedCoursesByStdId
 } = require('../managers/courses')
 
 
@@ -45,8 +45,7 @@ const listCoursesController = async(req, res) => {
             const teacher = await getTeacherByUserId(req.userID);
             courses = await getAllCoursesByDepId(teacher.depId);
 
-        } 
-        else {
+        } else {
             // Role is admin so get all courses
             courses = await Course.findAll();
         }
@@ -68,7 +67,7 @@ const createCourseController = async(req, res) => {
     const body = req.body;
 
     try {
-        
+
         // Check if the role is NOT Admin
         if (req.role != "A") {
             return res
@@ -173,7 +172,7 @@ const updateCourseInformationController = async(req, res) => {
 const deleteCourseController = async(req, res) => {
 
     try {
-        
+
         // Check if role is NOT Admin
         if (req.role != "A") {
             return res
@@ -208,11 +207,11 @@ const listOfferedCoursesController = async(req, res) => {
     try {
 
         // Check if role is neither Teacher nor Admin
-        if (req.role != "T" && req.role != "A") {
-            return res.status(403).send({
-                Message: "Only Admin and teacher are authorized to view offered courses information",
-            });
-        }
+        // if (req.role != "T" && req.role != "A") {
+        //     return res.status(403).send({
+        //         Message: "Only Admin and teacher are authorized to view offered courses information",
+        //     });
+        // }
 
         // Check if role is Teacher
         if (req.role == "T") {
@@ -238,7 +237,7 @@ const listOfferedCoursesController = async(req, res) => {
             // Get all offered courses and decrypt them
             const offerdcourses = await OfferedCourse.findAll();
             const decryptedOfferedCourses = await Promise.all(
-                
+
                 offerdcourses.map(async(user) => {
                     let course = await Course.findOne({
                         attributes: ["depId"],
@@ -283,7 +282,7 @@ const createOfferedCourseController = async(req, res) => {
     try {
 
         // Check if role is not Admin neither Teacher
-        if( req.role != 'A' && req.role != 'T'){
+        if (req.role != 'A' && req.role != 'T') {
             return res.status(403).send({
                 Message: "Only Admin and teacher are authorized to offer courses",
             });
@@ -328,7 +327,7 @@ const enrollCourseController = async(req, res) => {
     try {
 
         // Check if the role neither student nor admin
-        if (req.role != "S" && req.role != "A"){
+        if (req.role != "S" && req.role != "A") {
 
             return res.status(403).send({
                 Message: "Only Admin and student authorized to enroll for a course",
@@ -369,7 +368,7 @@ const enrollCourseController = async(req, res) => {
         });
         await enrolledCourse.save();
         return res.status(200).send({ Message: "Student enrolled" });
-        
+
 
     } catch (error) {
 
@@ -440,16 +439,16 @@ const enrollListByStudent = async(req, res) => {
         const studentId = await Des.encrypt(req.params.studentId);
 
         // Check if role is NOT Admin
-        if( req.role != 'A'){
+        if (req.role != 'A') {
             return res.status(403).send({ Message: "only admin can list all enrolls" });
         }
-        
+
         // Get and decrypt all courses the provided student id
         const enrolledCourses = await getOfferedCoursesByStdId(studentId)
         const decryptedEnrollerdCourses = await getDecryptedEnrollerdCourses(enrolledCourses)
         return res.json(decryptedEnrollerdCourses);
-        
-        
+
+
     } catch (error) {
         console.log(error);
         return res.status(404).send({ Message: "Something went wrong" });
@@ -548,7 +547,7 @@ const deleteOfferedCourseController = async(req, res) => {
         const offeredCourse = await Des.encrypt(req.params.offeredCourse);
 
         if (req.role == "A" || req.role == "T") {
-            
+
             // Get the offered course
             const offeredCourseData = await OfferedCourse.findOne({
                 where: {

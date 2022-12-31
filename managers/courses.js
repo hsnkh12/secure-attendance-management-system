@@ -23,7 +23,7 @@ const getCourseById = async(CourseID) => {
 const getAllCoursesByDepId = async(depId) => {
     return await Course.findAll({
         where: {
-            depId: teacher.depId,
+            depId: depId,
         },
     });
 };
