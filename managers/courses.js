@@ -1,6 +1,9 @@
 const Course = require("../models/Course");
 const OfferedCourse = require("../models/OfferedCourse");
-const {Des} = require('../utils/des')
+const Student = require("../models/Student");
+const StudentCourse = require("../models/StudentCourse");
+const { getTeacherByUserId } = require("./teachers");
+const { Des } = require("../utils/des");
 
 const getOfferedCourseById = async(offeredCourseID) => {
     return await OfferedCourse.findOne({
@@ -8,36 +11,32 @@ const getOfferedCourseById = async(offeredCourseID) => {
             offeredCourseCode: offeredCourseID,
         },
     });
-
-}
+};
 const getCourseById = async(CourseID) => {
     return await Course.findOne({
         where: {
             courseCode: CourseID,
         },
     });
+};
 
-}
-
-const getAllCoursesByDepId = async(depId)=>{
-    
+const getAllCoursesByDepId = async(depId) => {
     return await Course.findAll({
         where: {
             depId: teacher.depId,
         },
     });
-}
+};
 
-
-const createNewEncryptedCourse = async(body) =>{
+const createNewEncryptedCourse = async(body) => {
     return await Course.create({
         courseCode: await Des.encrypt(body.courseCode),
         name: await Des.encrypt(body.name),
         depId: await Des.encrypt(body.depId),
     });
-}
+};
 
-const getDecyptedCourses = async(courses) =>{
+const getDecyptedCourses = async(courses) => {
     return await Promise.all(
         courses.map(async(user) => ({
             courseCode: await Des.dencrypt(user.courseCode),
@@ -45,18 +44,17 @@ const getDecyptedCourses = async(courses) =>{
             depId: await Des.dencrypt(user.depId),
         }))
     );
-}
+};
 
-const getDecyptedCourse = async(course)=>{
+const getDecyptedCourse = async(course) => {
     return {
         courseCode: await Des.dencrypt(course.courseCode),
         name: await Des.dencrypt(course.name),
         depId: await Des.dencrypt(course.depId),
     };
-}
+};
 
 const getDecyptedOfferedCourses = async(offerdcourses) => {
-
     return await Promise.all(
         offerdcourses.map(async(user) => ({
             offeredCourseCode: await Des.dencrypt(user.offeredCourseCode),
@@ -69,9 +67,9 @@ const getDecyptedOfferedCourses = async(offerdcourses) => {
             depId: await Des.dencrypt(teacher.depId),
         }))
     );
-}
+};
 
-const createNewEncryptedOfferedCourse = async (body) => {
+const createNewEncryptedOfferedCourse = async(body) => {
     return await OfferedCourse.create({
         offeredCourseCode: await Des.encrypt(body.offeredCourseCode),
         semester: await Des.encrypt(body.semester),
@@ -81,21 +79,17 @@ const createNewEncryptedOfferedCourse = async (body) => {
         courseCode: await Des.encrypt(body.courseCode),
         userId: await Des.encrypt(body.userId),
     });
-}
+};
 
-
-const getAllStudentCoursesByUserId = async (userId) => {
-
+const getAllStudentCoursesByUserId = async(userId) => {
     return await StudentCourse.findAll({
         where: {
             userId: userId,
         },
     });
-}
+};
 
-
-const getDecryptedEnrollerdCourses = async (enrolledCourses) => {
-
+const getDecryptedEnrollerdCourses = async(enrolledCourses) => {
     return await Promise.all(
         enrolledCourses.map(async(course) => {
             const courseCodeGetter = await OfferedCourse.findOne({
@@ -112,15 +106,20 @@ const getDecryptedEnrollerdCourses = async (enrolledCourses) => {
             };
         })
     );
-}
+};
 
-const getOfferedCoursesByStdId = async (studentId) => {
-    return await StudentCourse.findAll({
+const getOfferedCoursesByStdId = async(studentIad) => {
+    const student = await Student.findOne({
         where: {
-            userId: studentId,
+            studentId: studentIad,
         },
     });
-}
+    return await StudentCourse.findAll({
+        where: {
+            userId: student.userId,
+        },
+    });
+};
 
 module.exports = {
     getOfferedCourseById,
@@ -133,5 +132,5 @@ module.exports = {
     createNewEncryptedOfferedCourse,
     getAllStudentCoursesByUserId,
     getDecryptedEnrollerdCourses,
-    getOfferedCoursesByStdId 
-}
+    getOfferedCoursesByStdId,
+};

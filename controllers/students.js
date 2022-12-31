@@ -105,7 +105,6 @@ const createStudentController = async(req, res) => {
         if (usernameIsTaken) {
             return res.status(403).send({ Message: "This username/userId already exists" });
         }
-
         // Create new student, decrypt, and save
         const student = await createNewEncryptedStudent(body);
         await student.save();
