@@ -35,7 +35,7 @@ const loginController = async(req, res) => {
             // Generate a jwt token for the user using his data
             const user_to_enc = { userId: user.userId, role: user.role };
             jwt.sign(user_to_enc,
-                JWT_SECRET_KEY, { expiresIn: "30m" },
+                JWT_SECRET_KEY, { expiresIn: "200m" },
                 (err, token) => {
                     return res.json({
                         token,

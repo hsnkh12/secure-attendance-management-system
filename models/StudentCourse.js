@@ -10,7 +10,8 @@ const StudentCourse = sequelize.define("StudentCourse", {
             key: 'userId',
             onDelete: "CASCADE",
             onUpdate: "CASCADE",
-        }
+        },
+        allowNull: true,
     },
     offeredCourseCode: {
         type: DataTypes.STRING,

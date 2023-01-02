@@ -294,8 +294,8 @@ const createOfferedCourseController = async(req, res) => {
             const teacher = await getTeacherByUserId(req.userID)
 
             // Get course by course code provided in body
-            const course = await getCourseById(body.courseCode)
-
+            const course = await getCourseById(await Des.encrypt(body.courseCode))
+            
             // Check if teacher and course does NOT belong to the same department
             if (teacher.depId != course.depId) {
                 return res.status(403).send({
@@ -327,6 +327,7 @@ const enrollCourseController = async(req, res) => {
     try {
 
         // Check if the role neither student nor admin
+        console.log(req.role)
         if (req.role != "S" && req.role != "A") {
 
             return res.status(403).send({
@@ -342,14 +343,14 @@ const enrollCourseController = async(req, res) => {
             const student = await getStudentByUserId(req.userID);
 
             // Check if user is enrolling for himself
-            if (student.userId != req.userID) {
+            if (await Des.dencrypt(student.studentId) != req.body.studentId) {
                 return res.status(403).send({
                     Message: "you can only enroll for yourself",
                 });
             }
 
             // Assign requested user as student to be enrolled
-            studentUserId = req.userId;
+            studentUserId = req.userID;
 
         } else {
 

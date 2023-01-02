@@ -105,6 +105,7 @@ const createNewEncryptedStudent = async (body) => {
         ),
         role: await Des.encrypt("S"),
         dateJoined: await Des.encrypt(body.dateJoined.toString()),
+        dateOfBirth: await Des.encrypt(body.dateOfBirth.toString()),
         userId: await Des.encrypt(body.userId),
         depId: await Des.encrypt(body.depId),
     });

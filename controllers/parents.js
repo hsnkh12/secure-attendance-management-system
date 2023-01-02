@@ -65,8 +65,21 @@ const createParentController = async(req, res) => {
         }
 
         // Create parent, encrypt, save, and return it
-        const parent = await createNewEncryptedParent(body, student);
+        const parent = await Parent.create({
+            firstName: await Des.encrypt(body.firstName),
+            lastName: await Des.encrypt(body.lastName),
+            studentUserId: student.userId,
+            email: await Des.encrypt(body.email),
+            password: await Des.encrypt(
+                await PasswordManager.hashPassword(body.password)
+            ),
+            role: await Des.encrypt("P"),
+            dateJoined: await Des.encrypt(body.dateJoined.toString()),
+            dateOfBirth: await Des.encrypt(body.dateOfBirth.toString()),
+            userId: await Des.encrypt(body.userId),
+        });
         await parent.save();
+        
         return res.status(200).send({ Message: "New parent added" });
 
     } catch (error) {
@@ -200,8 +213,7 @@ const deleteParentController = async(req, res) => {
                 userId: parentId,
             },
         });
-        // delete parent
-        await parent.delete();
+
         return res.status(201).send({ Message: "Parent information deleted" });
 
     } catch (error) {

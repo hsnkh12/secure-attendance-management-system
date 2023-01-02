@@ -46,10 +46,15 @@ const listStudentsController = async(req, res) => {
                 });
             }
 
-            const studentCoursesId = await getStudentCourseByOffCourseId(offeredCourse.offeredCourseCode);
+            const studentCourses = await getStudentCourseByOffCourseId(offeredCourse.offeredCourseCode);
 
             // Get students associated with this course, decrypt them, and send as a response
-            const students = await getAllStudentsById(studentCoursesId.studentId);
+            const students = await Student.findAll({
+                where: {
+                    userId: studentCourses[0].userId,
+                },
+            })
+        
             const decryptedStudents = await getDecryptedStudents(students);
             return res.json(decryptedStudents);
 
@@ -264,7 +269,7 @@ const deleteStudentController = async(req, res) => {
         // Find Student and delete it
         await Student.destroy({
             where: {
-                userId: studentId,
+                studentId: studentId,
             },
         });
 
