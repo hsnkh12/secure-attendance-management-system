@@ -3,7 +3,7 @@ const Student = require("../models/Student");
 const StudentCourse = require("../models/StudentCourse");
 const { Des } = require("../utils/des");
 const {PasswordManager} = require('../utils/password')
-
+const {Teacher} = require('../models/Teacher')
 
 const getStudentByStdId = async (studentId) => {
     return await Student.findOne({
@@ -46,7 +46,7 @@ const getAllStudentsByDepId = async (depId) => {
 
     return await Student.findAll({
         where: {
-            depid: teacher.depId,
+            depid: depId,
         },
     });
 }

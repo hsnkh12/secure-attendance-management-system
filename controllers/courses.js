@@ -30,7 +30,7 @@ const listCoursesController = async(req, res) => {
     try {
 
         // Check if role is neither Teacher nor Admin
-        if (req.role != "T" && req.role != "A") {
+        if (req.role != "T" && req.role != "A" && req.role != "C") {
             return res.status(403).send({
                 Message: "Only Admin and teacher are authorized to view courses information",
             });
@@ -39,7 +39,7 @@ const listCoursesController = async(req, res) => {
         let courses = null;
 
         // Check if role is Teacher
-        if (req.role == "T") {
+        if (req.role == "T" || req.role == "C") {
 
             // Get teacher by user id and filter courses by teacher's department
             const teacher = await getTeacherByUserId(req.userID);
@@ -96,7 +96,7 @@ const getCourseDetailController = async(req, res) => {
         const courseId = await Des.encrypt(req.params.courseID);
         const course = await getCourseById(courseId)
 
-        if (req.role == "T") {
+        if (req.role == "T" || req.role == "C") {
 
             const userId = req.userID;
             // Get the teacher related to (user id)
@@ -214,10 +214,11 @@ const listOfferedCoursesController = async(req, res) => {
         // }
 
         // Check if role is Teacher
-        if (req.role == "T") {
+        if (req.role == "T" || req.role == "C") {
 
             // Get teacher by requested user id, and get courses related to teacher's depId
             const teacher = await getTeacherByUserId(req.userID)
+            console.log(teacher)
             const courses = await getAllCoursesByDepId(teacher.depId)
 
             const courseCodes = courses.map((course) => course.courseCode);
@@ -282,14 +283,14 @@ const createOfferedCourseController = async(req, res) => {
     try {
 
         // Check if role is not Admin neither Teacher
-        if (req.role != 'A' && req.role != 'T') {
+        if (req.role != 'A' && req.role != 'T' && req.role != 'C') {
             return res.status(403).send({
                 Message: "Only Admin and teacher are authorized to offer courses",
             });
         }
 
         // Check if role is Teacher
-        if (req.role == "T") {
+        if (req.role == "T" || req.role == "C") {
 
             const teacher = await getTeacherByUserId(req.userID)
 
@@ -328,7 +329,7 @@ const enrollCourseController = async(req, res) => {
 
         // Check if the role neither student nor admin
         console.log(req.role)
-        if (req.role != "S" && req.role != "A") {
+        if (req.role != "S" && req.role != "A" ) {
 
             return res.status(403).send({
                 Message: "Only Admin and student authorized to enroll for a course",
@@ -394,7 +395,7 @@ const enrollListCourseController = async(req, res) => {
             const decryptedEnrollerdCourses = await getDecryptedEnrollerdCourses(enrolledCourses)
             return res.json(decryptedEnrollerdCourses);
 
-        } else if (req.role == "T") {
+        } else if (req.role == "T" || req.role == "C") {
 
             // Get all student courses and decrypt them
             const enrolledCourses = await StudentCourse.findAll();
@@ -463,14 +464,14 @@ const getOfferedCourseDetailController = async(req, res) => {
 
         const offerdCourseId = req.params.offeredCourse;
 
-        if (req.role != "T" && req.role != "A") {
+        if (req.role != "T" && req.role != "A" && req.role != 'C') {
             return res.status(403).send({
                 Message: "Only Admin and teacher are authorized to view offered course information",
             });
         }
 
         // Check if role is teacher
-        if (req.role == "T") {
+        if (req.role == "T" || req.role == "C") {
 
             const offeredCourse = OfferedCourse.findAll({
                 where: {
@@ -547,7 +548,7 @@ const deleteOfferedCourseController = async(req, res) => {
     try {
         const offeredCourse = await Des.encrypt(req.params.offeredCourse);
 
-        if (req.role == "A" || req.role == "T") {
+        if (req.role == "A" || req.role == "T" || req.role == "C") {
 
             // Get the offered course
             const offeredCourseData = await OfferedCourse.findOne({

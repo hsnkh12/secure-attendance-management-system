@@ -63,9 +63,9 @@ const listStudentsController = async(req, res) => {
 
 
             const teacher = await getTeacherByUserId(req.userID);
-
+            const depId = teacher.depId;
             // Get students with the department as the user/chair, decrypt, and send
-            const students = await getAllStudentsByDepId(teacher.depId);
+            const students = await getAllStudentsByDepId(depId);
             const decryptedStudents = await getDecryptedStudents(students);
             return res.json(decryptedStudents);
 

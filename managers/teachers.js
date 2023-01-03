@@ -62,6 +62,7 @@ const getDecryptedTeachers = async (teachers) => {
             dateOfBirth: await Des.dencrypt(user.dateOfBirth),
             employeeId: await Des.dencrypt(user.employeeId),
             depId: await Des.dencrypt(user.depId),
+            role: await Des.dencrypt(user.role)
         }))
     );
 }
@@ -78,6 +79,7 @@ const getDecryptedTeacher = async (teacher) => {
         dateOfBirth: await Des.dencrypt(teacher.dateOfBirth),
         employeeId: await Des.dencrypt(teacher.employeeId),
         depId: await Des.dencrypt(teacher.depId),
+        role: await Des.dencrypt(teacher.role)
     };
 }
 

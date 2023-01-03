@@ -124,14 +124,14 @@ const createAttendanceController = async(req, res) => {
         const offeredCourseID = await Des.encrypt(req.params.offeredCourseID);
 
         // Check if the role is neither Admin nor Teacher
-        if (req.role != "A" && req.role != "T") {
+        if (req.role != "A" && req.role != "T" && req.role != "C") {
             return res
                 .status(403)
                 .send({ Message: "Only a teacher and admin can add new attendance" });
         }
 
         // Check if role is Teacher
-        if (req.role == "T") {
+        if (req.role == "T" || req.role == "C") {
             const offeredCourse = await getOfferedCourseById(offeredCourseID);
 
             // Check if teacher does NOT teach this course

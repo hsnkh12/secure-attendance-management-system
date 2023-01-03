@@ -64,7 +64,6 @@ const getDecyptedOfferedCourses = async(offerdcourses) => {
             endDate: await Des.dencrypt(user.endDate),
             userId: await Des.dencrypt(user.userId),
             courseCode: await Des.dencrypt(user.courseCode),
-            depId: await Des.dencrypt(teacher.depId),
         }))
     );
 };
